@@ -110,7 +110,7 @@ def apple_wallet(user_data):
                 {
                     "label": "Assigned Run",
                     "key": "run_day",
-                    "value": user_data.get("assigned_run", "Not Assigned"),
+                    "value": user_data.get("assigned_run") if user_data.get("assigned_run", None) else "Not Assigned",
                 },
                 {
                     "label": "Team Number",
