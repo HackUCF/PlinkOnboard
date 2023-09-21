@@ -81,7 +81,7 @@
                 </div>
             {% endif %}
 
-            {% if user_data.get('waitlist') > 0 %}
+            {% if user_data.get('waitlist') and user_data.get('waitlist', -1) > 0 %}
             <h1>Your Team</h1>
             <div class="entry">
                 <h3>Assigned Competition Day</h3>
