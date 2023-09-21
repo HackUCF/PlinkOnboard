@@ -180,6 +180,14 @@ async def join_waitlist(
                 "rationale": "We have ran out of space in the Horse Plinko Cyber Challenge, and the waitlist is too long."
             })
 
+    # Check if user is an Organizer (i.e., they are on the banned guild)
+    check_organizer = Discord.check_presence(user_data.get("discord_id"), options.get('discord', {}).get('banned_guild_id'))
+    if check_organizer:
+        return templates.TemplateResponse("denied.html", {
+            "request": request,
+            "rationale": "You are an organizer. Organizers cannot compete, silly!"
+        })
+
     # I know this isn't the best approach, but it works, so I'll do it anyways.
     # But this just checks if you meet our arbitrary requirements.
     elgible, elgible_rationale = Plinko.check_elgible(user_data)

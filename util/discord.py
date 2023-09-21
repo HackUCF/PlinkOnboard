@@ -20,6 +20,22 @@ class Discord:
     def __init__(self):
         pass
 
+
+    def check_presence(discord_id, guild_id):
+        """
+        Checks if member is in a guild.
+        """
+
+        req = requests.get(
+            f"https://discord.com/api/guilds/{guild_id}/members/{discord_id}",
+            headers=headers,
+        )
+
+        joined = req.status_code < 400 or req.json().get("joined_at", False)
+
+        return joined
+
+
     def assign_role(discord_id, role_id):
         discord_id = str(discord_id)
 
