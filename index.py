@@ -74,6 +74,8 @@ async def index(request: Request, token: Optional[str] = Cookie(None)):
 
         if payload.get("waitlist") and payload.get("waitlist") > 0:
             return RedirectResponse("/profile/", status_code=status.HTTP_302_FOUND)
+        elif payload.get("sudo") == True:
+            return RedirectResponse("/profile/", status_code=status.HTTP_302_FOUND)
         else:
             return RedirectResponse("/join/", status_code=status.HTTP_302_FOUND)
     except:

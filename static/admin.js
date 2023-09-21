@@ -80,7 +80,11 @@ function userStatusString(member) {
         return "Not Registered"
     }
 
-    return "Waitlisted"; // Unactivated account
+    if (status > 1) {
+        return "Waitlisted";
+    }
+
+    return "Not Registered"; // Unactivated account
 }
 
 // Sanitizes any non-alphanum.
