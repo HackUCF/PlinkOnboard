@@ -115,7 +115,7 @@ def apple_wallet(user_data):
                 {
                     "label": "Team Number",
                     "key": "team_no",
-                    "value": user_data.get("team_number", "Not Assigned"),
+                    "value": user_data.get("team_number") if user_data.get("team_number", None) else "Not Assigned",
                 }
             ],
             "backFields": [
