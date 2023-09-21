@@ -202,7 +202,7 @@ async def oauth_transformer_new(
                 "email": hackucf_query[0].get("email"),
                 "experience": int(hackucf_query[0].get("experience", 0)),
                 "hackucf_id": hackucf_query[0].get("id"),
-                "sudo": hackucf_query[0].get("id", False)
+                "sudo": hackucf_query[0].get("sudo", False)
             }
             # table.update_item(
             #     Key={"id": query_for_id[0].get("id")},
