@@ -27,7 +27,7 @@ function load() {
     let count_waitlist = 0;
     let count_all = 0;
 
-    fetch("/admin/list").then(data => {
+    fetch("https://" + window.location.host + "/admin/list").then(data => {
         return data.json();
     }).then(data2 => {
         data2 = data2.data;
@@ -197,7 +197,7 @@ function editUser(payload) {
         }
     }
     const user_id = payload.id;
-    fetch("/admin/get", options).then(data => {
+    fetch("https://" + window.location.host + "/admin/get", options).then(data => {
         return data.json();
     }).then(data2 => {
         // Update user data.
@@ -224,7 +224,7 @@ function sendDiscordDM(user_id, message) {
             "Content-Type": "application/json"
         }
     }
-    fetch("/admin/message?member_id=" + user_id, options).then(data => {
+    fetch("https://" + window.location.host + "/admin/message?member_id=" + user_id, options).then(data => {
         return data.json();
     }).then(data2 => {
         alert(data2.msg);
@@ -232,7 +232,7 @@ function sendDiscordDM(user_id, message) {
 }
 
 function verifyUser(user_id) {
-    fetch("/admin/refresh?member_id=" + user_id).then(data => {
+    fetch("https://" + window.location.host + "/admin/refresh?member_id=" + user_id).then(data => {
         return data.json();
     }).then(data2 => {
         // Update user data.
@@ -249,7 +249,7 @@ function verifyUser(user_id) {
 }
 
 function inviteToInfra(user_id) {
-    fetch("/admin/infra?member_id=" + user_id).then(data => {
+    fetch("https://" + window.location.host + "/admin/infra?member_id=" + user_id).then(data => {
         return data.json();
     }).then(resp => {
         // Update user data.
@@ -265,7 +265,7 @@ Password: ${resp.password}`);
 
 function logoff() {
     document.cookie = 'token=; Max-Age=0; path=/; domain=' + location.hostname;
-    window.location.href = "/logout";
+    window.location.href = "https://" + window.location.host + "/logout";
 }
 
 function changeCamera() {
