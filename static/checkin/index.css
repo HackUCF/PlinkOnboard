@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+}
+
+html {
+    background: #1C1C1C;
+    color: white;
+    font-family: "Raleway", "Roboto", sans-serif;
+}
+
+.card {
+    max-width: 300px;
+    width: 100%;
+    margin: 20vh auto;
+    padding: 20px;
+    text-align: center;
+}
+
+video, .scan-region-highlight {
+    object-fit: cover;
+    width: 300px;
+    height: 300px;
+    border-radius: 25px;
+}
+
+video {
+    margin: 20px 0;
+}
+
+.ico {
+    font-size: 200px;
+    font-weight: bold;
+    font-family: math, monospace, serif;
+}
+
+.red {
+    color: #CC575D;
+}
+
+.green {
+    color: #57CC7F;
+}
+
+.blue {
+    color: #0B8AD2;
+}
+
+.gold {
+    color: #D2990B;
+}
+
+em {
+    text-decoration: underline;
+}
+
+#success, #failure, #load {
+    display: none;
+}
+
+h3 {
+    font-weight: normal;
+}

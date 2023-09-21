@@ -1,0 +1,84 @@
+[
+    {
+        "label": "About You",
+        "input": "h1",
+        "elements": [
+            {
+                "label": "Who are you, *really*? Human Resources needs to know.",
+                "input": "h2"
+            },
+            {
+                "label": "First Name",
+                "caption": "Your (preferred) first name.",
+                "input": "text",
+                "key": "first_name",
+                "required": true
+            },
+            {
+                "label": "Last Name",
+                "caption": "Your last name(s).",
+                "input": "text",
+                "key": "last_name",
+                "required": true
+            },
+            {
+                "label": "Email",
+                "caption": "This must be the same email you gave to Knight Hacks. This is important enough to break character for.",
+                "input": "email",
+                "key": "email",
+                "required": true
+            }
+        ]
+    },
+    {
+        "label": "Internship Logistics",
+        "input": "h1",
+        "elements": [
+            {
+                "label": "Help us match you to the perfect IHPL team!",
+                "input": "h2"
+            },
+            {
+                "label": "Do you have a preferred team?",
+                "caption": "If so, have everyone put the same Team Name here.",
+                "input": "text",
+                "key": "team_name",
+                "required": false
+            },
+            {
+                "label": "What days are you free?",
+                "caption": "What days you can work for us? The HLF does not sleep on weekends!",
+                "input": "radio",
+                "key": "availability",
+                "options": [
+                    "Saturday",
+                    "Sunday",
+                    "Either day works."
+                ],
+                "required": true
+            }
+        ]
+    },
+    {
+        "label": "Boring Checkboxes",
+        "input": "h1",
+        "elements": [
+            {
+                "label": "Knight Hacks ",
+                "caption": "I agree that I am at least 18 years old and will register for Knight Hacks in the next 24 hours.",
+                "input": "radio",
+                "options": [
+                    "I agree."
+                ],
+                "key": "did_agree_to_do_kh",
+                "required": true
+            },
+            {
+                "input": "navigation",
+                "next": "/plinko/join",
+                "prev": "/",
+                "prev_label": "Cancel"
+            }
+        ]
+    }
+]

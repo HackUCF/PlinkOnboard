@@ -1,0 +1,8 @@
+*.pyc
+__pycache__
+config/
+.terraform*
+terraform.*
+clouds.yaml
+infra_options.json
+_deploy.sh

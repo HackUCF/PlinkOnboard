@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, user-scalable=0">
+
+    <title>Apply - International Horse Plinko League</title>
+    <link rel="stylesheet" type="text/css" href="/static/hackucf.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@900&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://use.fontawesome.com/releases/v6.1.1/css/all.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app" id="1">
+        <h1>Welcome to the IHPL!</h1>
+        <p><b>This wizard will help you apply to the <span class="gold">Horse Plinko Cyber Challenge</span>, the International Horse Plinko League (IHPL) cybersecurity internship program.</b></p>
+
+        <a class="btn" href="/discord/new/"><i class="fa-brands fa-discord"></i> Link Discord</a>
+
+        <h2>Registration Status: <span class="{{ 'green' if waitlist_status == 'Open' else 'gold' if waitlist_status == 'Waitlisted' else 'red'}}">{{ waitlist_status }}</span></h2>
+        <p>Registration is first-come, first-serve. We also have a set of waitlist spots available that may open the weekend of the event.</p>
+
+        <p>Registration in the Horse Plinko Cyber Challenge does <span class="gold">not</span> affect the ability to compete in the various cybersecurity workshops and events at Knight Hacks. This is also separate from the sign-up for SunshineCTF, a capture-the-flag competition with no maximum and BSides Orlando, a local cybersecurity conference happening the same weekend.</p>
+
+        <div class="unfocus">
+            <hr>
+            <h3>This event is "in character."</h3>
+            <p>The Horse Plinko Cyber Challenge is a defensive (blue-team) cybersecurity competition approachable to beginners being held during the <i>Knight Hacks</i> hackathon.</p>
+            <p>A lot of what we do is "in character," meaning we are actively role-playing as a company, the International Horse Plinko League (IHPL), and you are role-playing as an unpaid intern (or as we call them, Plinkterns). We do this to make the competition more approachable, fun, and <i>slightly</i> more realistic.</p>
+            <p>This means that we will be often word things as if you were an "employee" of the IHPL. This just means you are competing in the competition.</p>
+            <h3>We heavily utilize Discord.</h3>
+            <p>
+                We will ask you to link your Discord with our Discord bot, which we use to organize teams and send you information during the competition. The competition is run entirely on Discord, and a Discord account is required.
+            </p>
+            <p>
+                <b>Privacy is <i>very</i> important to us.</b> We may share some of your data with our corporate sponsors (with your consent) and Knight Hacks. If you have any questions, email <code>ops@hackucf.org</code>.
+            </p>
+            <details>
+                <summary>Click to view nerdy details.</summary>
+                <p>
+                    This is a fork of Onboard, a tool used by Hack@UCF for membership management, with some changes to work well for the Horse Plinko Cyber Challenge.
+                </p>
+                <p>
+                    Onboard is powered by DynamoDB and the Discord API. When you link your Discord
+                    with Onboard, we collect some account metadata, such as your user ID, profile image, email, 2FA status, and
+                    username.
+                </p>
+                <p>
+                    Every person who uses Onboard will get an ID. This is a
+                    unique identifier that we can use in place of University identifiers (such as your UCF ID) to verify membership.
+                    You can access your Hack@UCF ID via the "My Membership" page.
+                </p>
+                <p>
+                    We also share data between the primary Hack@UCF Onboard database if you have used Onboard to expedite sign-up and help with team assignment. This is securely done behind the scenes. The Hack@UCF and Horse Plinko databases are stored in different tables in DynamoDB.
+                </p>
+            </details>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="/static/form.js"></script>
+</html>
