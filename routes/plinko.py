@@ -18,7 +18,6 @@ from models.user import PublicContact
 from util.authentication import Authentication
 from util.errors import Errors
 from util.options import Options
-from util.approve import Approve
 from util.discord import Discord
 from util.plinko import Plinko
 from util.kennelish import Kennelish, Transformer

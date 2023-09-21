@@ -29,7 +29,6 @@ from util.authentication import Authentication
 
 # Import error handling
 from util.errors import Errors
-from util.approve import Approve
 
 # Import options
 from util.options import Options

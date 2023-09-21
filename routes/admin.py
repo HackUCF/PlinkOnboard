@@ -17,7 +17,6 @@ from models.info import InfoModel
 from util.authentication import Authentication
 from util.errors import Errors
 from util.options import Options
-from util.approve import Approve
 from util.discord import Discord
 from util.kennelish import Kennelish, Transformer
 
@@ -48,82 +47,6 @@ async def admin(request: Request, token: Optional[str] = Cookie(None)):
             "id": payload["id"],
         },
     )
-
-
-@router.get("/infra/")
-@Authentication.admin
-async def get_infra(
-    request: Request,
-    token: Optional[str] = Cookie(None),
-    member_id: Optional[str] = "FAIL",
-):
-    """
-    API endpoint to FORCE-provision Infra credentials (even without membership!!!)
-    """
-    if member_id == "FAIL":
-        return {"username": "", "password": "", "error": "Missing ?member_id"}
-
-    creds = Approve.provision_infra(member_id)
-    if creds == None:
-        creds = {}
-
-    if not creds:
-        return Errors.generate(request, 404, "User Not Found")
-
-    # Get user data
-    dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
-
-    user_data = table.get_item(Key={"id": member_id}).get("Item", None)
-
-    # Send DM...
-    new_creds_msg = f"""Hello {user_data.get('first_name')},
-
-We are happy to grant you Hack@UCF Private Cloud access!
-
-These credentials can be used to the Hack@UCF Private Cloud. This can be accessed at {options.get('infra', {}).get('horizon')} while on the CyberLab WiFi.
-
-```yaml
-Username: {creds.get('username', 'Not Set')}
-Password: {creds.get('password', f"Please visit https://{options.get('http', {}).get('domain')}/profile and under Danger Zone, reset your Infra creds.")}
-```
-
-The password for the `Cyberlab` WiFi is currently `{options.get('infra', {}).get('wifi')}`, but this is subject to change (and we'll let you know when that happens).
-
-Happy Hacking,
-  - Hack@UCF Bot
-            """
-
-    # Send Discord message
-    Discord.send_message(user_data.get("discord_id"), new_creds_msg)
-
-    return {"username": creds.get("username"), "password": creds.get("password")}
-
-
-@router.get("/refresh/")
-@Authentication.admin
-async def get_refresh(
-    request: Request,
-    token: Optional[str] = Cookie(None),
-    member_id: Optional[str] = "FAIL",
-):
-    """
-    API endpoint that re-runs the member verification workflow
-    """
-    if member_id == "FAIL":
-        return {"data": {}, "error": "Missing ?member_id"}
-
-    Approve.approve_member(member_id)
-
-    dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
-    data = table.get_item(Key={"id": member_id}).get("Item", None)
-
-    if not data:
-        return Errors.generate(request, 404, "User Not Found")
-
-    return {"data": data}
-
 
 @router.get("/get/")
 @Authentication.admin
