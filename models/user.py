@@ -57,37 +57,37 @@ class UserModelMutable(BaseModel):
     id: str
 
     # PII
-    first_name: Optional[str] = ""
-    last_name: Optional[str] = ""
-    email: Optional[str] = ""
-    shirt_size: Optional[str] = ""
+    first_name: Optional[str]
+    last_name: Optional[str]
+    email: Optional[str]
+    shirt_size: Optional[str]
 
     # The MLH required stuff
-    did_agree_to_do_kh: Optional[bool] = False  # must be True to compete
+    did_agree_to_do_kh: Optional[bool]  # must be True to compete
 
     # HPCC data (user-mutable)
-    team_name: Optional[str] = ""
-    availability: Optional[str] = ""
+    team_name: Optional[str]
+    availability: Optional[str]
 
     # Permissions and Member Status
-    sudo: Optional[bool] = False
+    sudo: Optional[bool]
 
     # Collected from Discord
     discord_id: Optional[str]
     discord: Optional[DiscordModel]
 
     # Collected from HackUCF Onboard
-    hackucf_id: Optional[str] = None
-    experience: Optional[int] = None
+    hackucf_id: Optional[str]
+    experience: Optional[int]
 
     # HPCC data (internal)
-    waitlist: Optional[int] = None
-    team_number: Optional[int] = None
-    assigned_run: Optional[str] = ""
+    waitlist: Optional[int]
+    team_number: Optional[int]
+    assigned_run: Optional[str]
 
-    checked_in: Optional[bool] = False
+    checked_in: Optional[bool]
 
-    did_get_shirt: Optional[bool] = False
+    did_get_shirt: Optional[bool]
 
 
 class PublicContact(BaseModel):
