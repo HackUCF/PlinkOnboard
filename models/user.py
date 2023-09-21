@@ -73,8 +73,8 @@ class UserModelMutable(BaseModel):
     sudo: Optional[bool] = False
 
     # Collected from Discord
-    discord_id: str
-    discord: DiscordModel
+    discord_id: Optional[str]
+    discord: Optional[DiscordModel]
 
     # Collected from HackUCF Onboard
     hackucf_id: Optional[str] = None
