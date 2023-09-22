@@ -198,11 +198,15 @@ async def oauth_transformer_new(
         print(hackucf_query)
 
         if hackucf_query:
+            hackucf_federated_experience = 0
+            if hackucf_query[0].get("experience"):
+                hackucf_federated_experience = int(hackucf_query[0].get("experience", 0))
+                
             hackucf_data = {
                 "first_name": hackucf_query[0].get("first_name"),
                 "last_name": hackucf_query[0].get("surname"),
                 "email": hackucf_query[0].get("email"),
-                "experience": int(hackucf_query[0].get("experience", 0)),
+                "experience": hackucf_federated_experience,
                 "hackucf_id": hackucf_query[0].get("id"),
                 "sudo": hackucf_query[0].get("sudo", False)
             }
