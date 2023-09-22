@@ -39,9 +39,9 @@ class Plinko:
         """
         Return waitlist metadata as (current_count, status, group #)
         """
-        participation_cap = 120
+        participation_cap = 120 - 4  # save for uBuffalo
         waitlist_groups = 15  # 150, 180, 210, etc.
-        hard_cap = 200
+        hard_cap = 200 - 4  # save for uBuffalo
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
