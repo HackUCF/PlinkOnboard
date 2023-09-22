@@ -48,6 +48,8 @@ class UserModel(BaseModel):
 
     checked_in: Optional[bool] = False
 
+    did_sign_photo_release: Optional[bool] = False
+
     did_get_shirt: Optional[bool] = False
 
 
@@ -86,6 +88,8 @@ class UserModelMutable(BaseModel):
     assigned_run: Optional[str]
 
     checked_in: Optional[bool]
+
+    did_sign_photo_release: Optional[bool]
 
     did_get_shirt: Optional[bool]
 
