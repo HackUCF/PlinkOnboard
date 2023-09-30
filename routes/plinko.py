@@ -128,7 +128,7 @@ async def get_team_info(
         output.append([])
 
     for user in data:
-        if user.get("assigned_run").lower() == run.lower() and user.get("team_number"):
+        if user.get("assigned_run").lower() == run.lower() and user.get("team_number") and user.get("waitlist") == 1:
             team_idx = int(user.get("team_number")) - 1
 
             output[team_idx].append(user.get("discord_id"))
