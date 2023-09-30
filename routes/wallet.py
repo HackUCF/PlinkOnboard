@@ -110,13 +110,17 @@ def apple_wallet(user_data):
                 {
                     "label": "Assigned Run",
                     "key": "run_day",
-                    "value": user_data.get("assigned_run") if user_data.get("assigned_run", None) else "Not Assigned",
+                    "value": user_data.get("assigned_run")
+                    if user_data.get("assigned_run", None)
+                    else "Not Assigned",
                 },
                 {
                     "label": "Team Number",
                     "key": "team_no",
-                    "value": user_data.get("team_number") if user_data.get("team_number", None) else "Not Assigned",
-                }
+                    "value": user_data.get("team_number")
+                    if user_data.get("team_number", None)
+                    else "Not Assigned",
+                },
             ],
             "backFields": [
                 {
@@ -130,7 +134,7 @@ def apple_wallet(user_data):
                     "key": "check-in",
                     "value": "Please visit ENG1-186 (the CyberLab) to check in at your assigned time.",
                     "attributedValue": "Please visit ENG1-186 (the CyberLab) to check in at your assigned time.",
-                }
+                },
             ],
         },
     }

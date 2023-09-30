@@ -7,7 +7,7 @@ function load() {
     let valueItems = "<tr>";
     let valueHeader = "<tr>";
     for (let i = 0; i < valueNames.length; i++) {
-        valueItems += `<td class="${valueNames[i].toLowerCase()}"></td>`;
+        valueItems += `<td class="${valueNames[i].toLowerCase().replaceAll(' ', '')}"></td>`;
         valueHeader += `<td><button class="sort totally_text" data-sort="${valueNames[i].toLowerCase().replaceAll(' ', '')}">${valueNames[i]}</button></td>`
         valueNames[i] = valueNames[i].toLowerCase().replaceAll(' ', '');
     }

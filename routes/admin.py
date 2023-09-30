@@ -48,6 +48,7 @@ async def admin(request: Request, token: Optional[str] = Cookie(None)):
         },
     )
 
+
 @router.get("/get/")
 @Authentication.admin
 async def admin_get_single(

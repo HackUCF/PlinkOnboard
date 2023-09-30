@@ -113,10 +113,16 @@ async def post_form(
     for item in items_to_update:
         if item[1] != None:
             # English -> Boolean
-            if item[1] == "Yes" or item[1] == "I promise not to do this." or item[1] == "I agree." or item[1] == "I am okay with being messaged by MLH.":
+            if (
+                item[1] == "Yes"
+                or item[1] == "I promise not to do this."
+                or item[1] == "I agree."
+                or item[1] == "I am okay with being messaged by MLH."
+            ):
                 item = (item[0], True)
             elif (
-                item[1] == "No" or item[1] == "I do NOT agree."
+                item[1] == "No"
+                or item[1] == "I do NOT agree."
                 or item[1]
                 == "I disagree with this and do not wish to be part of Hack@UCF"
             ):

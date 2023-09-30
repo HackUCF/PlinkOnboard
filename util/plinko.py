@@ -26,7 +26,7 @@ class Plinko:
         data = {
             "has_first_name": user_data.get("first_name") != None,
             "has_last_name": user_data.get("last_name") != None,
-            "kh_checked": user_data.get("did_agree_to_do_kh") == True
+            "kh_checked": user_data.get("did_agree_to_do_kh") == True,
         }
 
         for value in data.values():
@@ -34,6 +34,39 @@ class Plinko:
                 return False, data
 
         return True, data
+
+    def get_team(user_id):
+        """
+        Get team information for a given user, including team-mates
+        """
+
+        # Database connection to get user...
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
+        user_data = table.get_item(Key={"id": user_id}).get("Item", None)
+
+        user_team_number = user_data.get("team_number")
+        user_run = user_data.get("assigned_run")
+
+        if not user_team_number or not user_run:
+            return None
+
+        teammates = []
+
+        all_users_with_team_number = table.scan(
+            FilterExpression=Attr("team_number").eq(user_team_number)
+        ).get("Items", None)
+
+        for user in all_users_with_team_number:
+            if user.get("assigned_run") == user_run:
+                user_lite = {
+                    "first_name": user.get("first_name"),
+                    "discord_id": user.get("discord_id"),
+                    "discord_username": user.get("discord", {}).get("username"),
+                }
+                teammates.append(user_lite)
+
+        return {"number": user_team_number, "run": user_run, "members": teammates}
 
     def get_waitlist_status(plus_one=False):
         """

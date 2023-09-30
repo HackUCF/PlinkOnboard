@@ -59,7 +59,6 @@ app.include_router(wallet.router)
 app.include_router(plinko.router)
 
 
-
 @app.get("/")
 async def index(request: Request, token: Optional[str] = Cookie(None)):
     """
@@ -79,7 +78,9 @@ async def index(request: Request, token: Optional[str] = Cookie(None)):
         else:
             return RedirectResponse("/join/", status_code=status.HTTP_302_FOUND)
     except:
-        return RedirectResponse("/discord/new/?redir=/", status_code=status.HTTP_302_FOUND)
+        return RedirectResponse(
+            "/discord/new/?redir=/", status_code=status.HTTP_302_FOUND
+        )
 
 
 """
@@ -132,7 +133,6 @@ async def oauth_transformer_new(
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
     hackucf_table = dynamodb.Table(options.get("aws").get("dynamodb").get("hackucf"))
-    
 
     # Open redirect check
     if redir == "_redir":
@@ -200,15 +200,17 @@ async def oauth_transformer_new(
         if hackucf_query:
             hackucf_federated_experience = 0
             if hackucf_query[0].get("experience"):
-                hackucf_federated_experience = int(hackucf_query[0].get("experience", 0))
-                
+                hackucf_federated_experience = int(
+                    hackucf_query[0].get("experience", 0)
+                )
+
             hackucf_data = {
                 "first_name": hackucf_query[0].get("first_name"),
                 "last_name": hackucf_query[0].get("surname"),
                 "email": hackucf_query[0].get("email"),
                 "experience": hackucf_federated_experience,
                 "hackucf_id": hackucf_query[0].get("id"),
-                "sudo": hackucf_query[0].get("sudo", False)
+                "sudo": hackucf_query[0].get("sudo", False),
             }
             # table.update_item(
             #     Key={"id": query_for_id[0].get("id")},
@@ -287,7 +289,7 @@ async def oauth_transformer_new(
         "pfp": full_data["discord"]["avatar"],
         "id": member_id,
         "sudo": do_sudo,
-        "issued": time.time()
+        "issued": time.time(),
     }
     bearer = jwt.encode(
         jwtData,
@@ -312,9 +314,10 @@ Renders the landing page for the sign-up flow.
 async def join(request: Request, token: Optional[str] = Cookie(None)):
     signups, wl_status, group = Plinko.get_waitlist_status()
     if token == None:
-        return templates.TemplateResponse("signup.html", {"request": request, "waitlist_status": wl_status})
+        return templates.TemplateResponse(
+            "signup.html", {"request": request, "waitlist_status": wl_status}
+        )
     else:
-
         try:
             payload = jwt.decode(
                 token,
