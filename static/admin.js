@@ -73,7 +73,7 @@ function userStatusString(member) {
     const status = member.waitlist;
 
     if (status == 1) {
-        return "Registered";
+        return "Competing";
     }
 
     if (status == 0) {
@@ -295,14 +295,14 @@ function filter(showOnlyActiveUsers) {
     // showActiveUsers == true -> only active shown
     // showActiveUsers == false -> only inactive shown
     userList.filter((item) => {
-        let activeOrInactive = item.values().is_full_member;
+        let activeOrInactive = (item.values().status === "Competing");
         if (!showOnlyActiveUsers) {
             activeOrInactive = !activeOrInactive
         }
         return activeOrInactive;
     });
 
-    document.getElementById("activeFilter").innerText = showOnlyActiveUsers ? "Active" : "Inactive"
+    document.getElementById("activeFilter").innerText = showOnlyActiveUsers ? "Competing" : "!Competing"
     document.getElementById("activeFilter").onclick = (evt) => {
         filter(!showOnlyActiveUsers);
     }
@@ -312,14 +312,14 @@ function mentorFilter(isMentorMode) {
     // isMentorMode == true -> show those in mentor program
     // isMentorMode == false -> show all
     userList.filter((item) => {
-        let activeOrInactive = (item.values().mentee && item.values().mentee !== "Not Mentee");
+        let activeOrInactive = !(item.values().teamnumber && item.values().assignedrun);
         if (!isMentorMode) {
             activeOrInactive = true;
         }
         return activeOrInactive;
     });
 
-    document.getElementById("menteeFilter").innerText = isMentorMode ? "Mentees" : "All Mentee"
+    document.getElementById("menteeFilter").innerText = isMentorMode ? "Unassigned" : "Any Assign"
     document.getElementById("menteeFilter").onclick = (evt) => {
         mentorFilter(!isMentorMode);
     }
