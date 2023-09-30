@@ -49,18 +49,6 @@
                 <h3>Employment Status</h3>
                 <div>{{ "Waitlisted" if (user_data.get('waitlist') and user_data.get('waitlist') >= 2) else "Confirmed" if (user_data.get('waitlist') and user_data.get('waitlist') == 1) else "Not Registered" }}</div>
             </div>
-            {% if user_data.get('team_number', False) %}
-                <div class="entry">
-                    <h3>Team Number</h3>
-                    <div>{{ user_data.get('team_number') }}</div>
-                </div>
-            {% endif %}
-            {% if user_data.get('assigned_run', False) %}
-                <div class="entry">
-                    <h3>Assigned Day</h3>
-                    <div>{{ user_data.get('assigned_run') }}</div>
-                </div>
-            {% endif %}
 
             <a class="btn" href="/join/edit"><i class="fa-solid fa-pencil"></i> Edit</a>
             {% if user_data.get('sudo', False) %}
@@ -82,31 +70,42 @@
             {% endif %}
 
             {% if user_data.get('waitlist') and user_data.get('waitlist', -1) > 0 %}
-            <h1>Your Team</h1>
-            <div class="entry">
-                <h3>Assigned Competition Day</h3>
-                <div>{{ user_data.get('assigned_run') if (user_data.get('assigned_run') and user_data.get('assigned_run') != "") else "Pending" }}</div>
-            </div>
-            <div class="entry">
-                <h3>Team Number</h3>
-                <div>{{ user_data.get('team_number') if (user_data.get('assigned_run')) else "Pending" }}</div>
-            </div>
+                <h1>Your Team</h1>
+                <h2>Basic Information</h2>
+                <div class="entry">
+                    <h3>Team Information</h3>
+                    <div>{{ user_data.get('assigned_run') if (user_data.get('assigned_run') and user_data.get('assigned_run') != "") else "Pending" }}</div>
+                </div>
+                <div class="entry">
+                    <h3>Team Number</h3>
+                    <div>{{ user_data.get('team_number') if (user_data.get('assigned_run')) else "Pending" }}</div>
+                </div>
 
-            <h1>Attendance</h1>
-            <div class="entry">
-                <div>
-                    <h3>Checked In?</h3>
-                    <span>This just shows if you showed up or not.</span>
+                {% if team_data %}
+                    <h2>Team Members</h2>
+                    {% for user in team_data.get("members") %}
+                        <div class="entry">
+                            <h3>{{ user.get("first_name") }}</h3>
+                            <div>@{{ user.get("discord_username") }}</div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <h1>Attendance</h1>
+                <div class="entry">
+                    <div>
+                        <h3>Checked In?</h3>
+                        <span>This just shows if you showed up or not.</span>
+                    </div>
+                    <div>{{ "Yes" if (user_data.get('checked_in')) else "No" }}</div>
                 </div>
-                <div>{{ "Yes" if (user_data.get('checked_in')) else "No" }}</div>
-            </div>
-            <div class="entry">
-                <div>
-                    <h3>Drop Out</h3>
-                    <span>If you cannot compete in HPCC anymore, please release your spot so we can give your seat to someone else. <span class="red">This cannot be undone!</span></span>
+                <div class="entry">
+                    <div>
+                        <h3>Drop Out</h3>
+                        <span>If you cannot compete in HPCC anymore, please release your spot so we can give your seat to someone else. <span class="red">This cannot be undone!</span></span>
+                    </div>
+                    <div><a class="btn" href="/plinko/drop-out"><i class="fa-solid fa-person-walking-arrow-right"></i> Drop Out</a></div>
                 </div>
-                <div><a class="btn" href="/plinko/drop-out"><i class="fa-solid fa-person-walking-arrow-right"></i> Drop Out</a></div>
-            </div>
             {% endif %}
 
         </div>

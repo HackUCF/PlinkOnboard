@@ -182,6 +182,16 @@ function showUser(userId) {
         sendDiscordDM(user.id, message);
     }
 
+    document.getElementById("setTeam").onclick = (evt) => {
+        const team_run = prompt("Enter the run name to put this competitor on (e.g., \"Saturday\"):");
+        const team_number = prompt("Enter this person's team number:");
+        editUser({
+            "id": user.id,
+            "assigned_run": team_run,
+            "team_number": Number(team_number)
+        })
+    }
+
     // Set page visibilities
     document.getElementById("users").style.display = "none";
     document.getElementById("scanner").style.display = "none";

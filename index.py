@@ -357,8 +357,10 @@ async def profile(
 
     user_data = table.get_item(Key={"id": payload.get("id")}).get("Item", None)
 
+    team_data = Plinko.get_team(payload.get("id"))
+
     return templates.TemplateResponse(
-        "profile.html", {"request": request, "user_data": user_data}
+        "profile.html", {"request": request, "user_data": user_data, "team_data": team_data}
     )
 
 
