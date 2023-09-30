@@ -58,7 +58,7 @@ class Plinko:
         ).get("Items", None)
 
         for user in all_users_with_team_number:
-            if user.get("assigned_run") == user_run:
+            if user.get("assigned_run") == user_run and user.get("waitlist") == 1:
                 user_lite = {
                     "first_name": user.get("first_name"),
                     "discord_id": user.get("discord_id"),
