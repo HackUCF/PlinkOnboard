@@ -118,9 +118,10 @@ async def get_team_info(
     # Find hightest index.
     team_count = -1
     for user in data:
-        team_number = int(user.get("team_number"))
-        if team_number > team_count:
-            team_count = team_number
+        if user.get("team_number"):
+            team_number = int(user.get("team_number"))
+            if team_number > team_count:
+                team_count = team_number
 
     # Populate output with correct number of indexes.
     for i in range(team_count):
