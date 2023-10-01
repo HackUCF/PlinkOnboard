@@ -32,11 +32,23 @@ function scannedCode(result) {
                 qrScanner.start();
             }, wait * 1000);
         } else {
+            let color = "gold";
+            let room = "ENG1-186 staff desk"
+            let team_number = Number(json.user.team_number);
+            if (team_number >= 1 && team_number <= 8) {
+                color = "green";
+                room = "ENG1-187"
+            } else if (team_number >= 9 && team_number <= 15) {
+                color = "purple";
+                room = "ENG1-188";
+            }
+
+
             // Show result to user.
             document.getElementById("name").innerText = `Welcome, ${json.user.first_name}!`;
-            document.getElementById("flavor").innerHTML = `<h2>You are on Team ${json.user.team_number}.<h2><br>
-        <h3>Please head to ENG1-188 by following the <em class="blue">blue</em> signs.</h3>
-        <h3>Your table will have a <em>Team ${json.user.team_number}</em> sign on it.</h3>
+            document.getElementById("flavor").innerHTML = `<h2><span class="team ${color}">You are on Team ${team_number}.</span><h2><br>
+        <h3>Please head to ${room} by following the <em class="team ${color}">${color}</em> signs.</h3>
+        <h3>Your table will have a <em>Team ${team_number}</em> sign on it.</h3>
         `;
             showPage("success");
 

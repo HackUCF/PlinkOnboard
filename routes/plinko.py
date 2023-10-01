@@ -184,16 +184,9 @@ async def checkin(
 
     user_data["checked_in"] = True
 
-    message_text = f"""Hello {user_data.get('first_name', 'Plinktern')},
-
-This message is confirming that you have been *checked in* to the Horse Plinko Cyber Challenge run for {run}.
-
-You are on Team {user_data.get("team_number", 'Unassigned')}.
-
-Please follow the signs to your .
-"""
-
-    Discord.send_message(user_data.get("discord_id"), message_text)
+    team_number = -1
+    if user_data.get("team_number"):
+        team_number = int(user_data.get("team_number", -1))
 
     return {"success": True, "msg": "Checked in!", "user": user_data}
 

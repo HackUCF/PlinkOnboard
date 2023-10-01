@@ -49,6 +49,14 @@ video {
     color: #D2990B;
 }
 
+.team.green {
+    color: #009206;
+}
+
+.team.purple {
+    color: #7D0092;
+}
+
 em {
     text-decoration: underline;
 }
