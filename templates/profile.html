@@ -51,9 +51,6 @@
             </div>
 
             <a alt="Edit Profile button" class="btn" href="/join/edit"><i aria-hidden="true" class="fa-solid fa-pencil"></i> Edit</a>
-            {% if user_data.get('sudo', False) %}
-                <a alt="Admin button" class="btn" href="/admin/"><i aria-hidden="true" class="fa-solid fa-lock"></i> Admin</a>
-            {% endif %}
             {% if user_data.get('waitlist') != None or user_data.get('waitlist') != 1 %}
                 <a alt="Re-Check Waitlist Status button" href="/plinko/join" class="btn"><i aria-hidden="true" class="fa-solid fa-clock"></i> Re-Check Waitlist Status</a>
             {% endif %}
@@ -67,6 +64,14 @@
                     </div>
                     <div>Yes</div>
                 </div>
+            {% endif %}
+
+            {% if user_data.get('sudo', False) %}
+                <h1>The Admin Zone</h1>
+                <p>Here are admin tools useful for running the Horse Plinko Cyber Challenge. This is only the tools included in PlinkOnboard; other utilities are a part of the PlinkoBot project.</p>
+                <a alt="User List button" class="btn" href="/admin/"><i aria-hidden="true" class="fa-solid fa-users"></i> User List</a>
+                <a alt="Check-in Dashboard button" class="btn" href="/plinko/dash"><i aria-hidden="true" class="fa-solid fa-grip"></i> Check-In Dashboard</a>
+                <a alt="QR Scanner button" class="btn" href="/plinko/scanner"><i aria-hidden="true" class="fa-solid fa-qrcode"></i> QR Scanner</a>
             {% endif %}
 
             {% if user_data.get('waitlist') and user_data.get('waitlist', -1) > 0 %}
