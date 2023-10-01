@@ -50,14 +50,14 @@
                 <div>{{ "Waitlisted" if (user_data.get('waitlist') and user_data.get('waitlist') >= 2) else "Confirmed" if (user_data.get('waitlist') and user_data.get('waitlist') == 1) else "Not Registered" }}</div>
             </div>
 
-            <a alt="Edit Profile button" class="btn" href="/join/edit"><i class="fa-solid fa-pencil"></i> Edit</a>
+            <a alt="Edit Profile button" class="btn" href="/join/edit"><i aria-hidden="true" class="fa-solid fa-pencil"></i> Edit</a>
             {% if user_data.get('sudo', False) %}
-                <a alt="Admin button" class="btn" href="/admin/"><i class="fa-solid fa-lock"></i> Admin</a>
+                <a alt="Admin button" class="btn" href="/admin/"><i aria-hidden="true" class="fa-solid fa-lock"></i> Admin</a>
             {% endif %}
             {% if user_data.get('waitlist') != None or user_data.get('waitlist') != 1 %}
-                <a alt="Re-Check Waitlist Status button" href="/plinko/join" class="btn"><i class="fa-solid fa-clock"></i> Re-Check Waitlist Status</a>
+                <a alt="Re-Check Waitlist Status button" href="/plinko/join" class="btn"><i aria-hidden="true" class="fa-solid fa-clock"></i> Re-Check Waitlist Status</a>
             {% endif %}
-            <a alt="Log Out button" class="btn" href="#logoff" onclick="logoff()"><i class="fa-solid fa-key"></i> Log Out</a>
+            <a alt="Log Out button" class="btn" href="#logoff" onclick="logoff()"><i aria-hidden="true" class="fa-solid fa-key"></i> Log Out</a>
 
             {% if user_data.get('sudo', False) %}
                 <div class="entry">
@@ -104,7 +104,7 @@
                         <h3>Drop Out</h3>
                         <span>If you cannot compete in HPCC anymore, please release your spot so we can give your seat to someone else. <span class="red">This cannot be undone!</span></span>
                     </div>
-                    <div><a alt="Drop Out button" class="btn" href="/plinko/drop-out"><i class="fa-solid fa-person-walking-arrow-right"></i> Drop Out</a></div>
+                    <div><a alt="Drop Out button" class="btn" href="/plinko/drop-out"><i aria-hidden="true" class="fa-solid fa-person-walking-arrow-right"></i> Drop Out</a></div>
                 </div>
             {% endif %}
 
