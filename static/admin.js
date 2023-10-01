@@ -177,6 +177,14 @@ function showUser(userId) {
     };
     document.getElementById("adminLabel").innerText = user.sudo ? "Revoke Admin" : "Promote to Admin";
 
+    document.getElementById("toggleCheckIn").onclick = (evt) => {
+        editUser({
+            "id": user.id,
+            "checked_in": !user.checked_in
+        })
+    };
+    document.getElementById("checkinLabel").innerText = user.checked_in ? "Check Out" : "Check In";
+
     document.getElementById("sendMessage").onclick = (evt) => {
         const message = prompt("Please enter message to send to user:");
         sendDiscordDM(user.id, message);
