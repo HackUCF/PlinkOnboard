@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, user-scalable=0">
 
-    <title>Your Profile - Hack@UCF</title>
+    <title>Your Profile - International Horse Plinko League</title>
     <link rel="stylesheet" type="text/css" href="/static/hackucf.css">
 
     <!-- Google Fonts -->
@@ -24,7 +24,7 @@
         <div class="header">
             <span class="logo right big">HPCC_IHPL</span>
             <div class="user">
-                <div class="icon" style="background-image: url({{user_data.get('discord', {}).get('avatar')}})"></div>
+                <div aria-hidden="true" class="icon" style="background-image: url({{user_data.get('discord', {}).get('avatar')}})"></div>
                 <h2>{{user_data.get('discord', {}).get('username')}}</h2>
                 <h3>via Discord</h3><br>
             </div>
@@ -32,7 +32,7 @@
         <div class="form">
             <h1>Your Employee Profile</h1>
             <div id="qr" class="qr"></div>
-            <a id="apple_wallet" href="/wallet/apple"><img src="/static/apple_wallet.svg"></img></a>
+            <a alt="Add to Apple Wallet" id="apple_wallet" href="/wallet/apple"><img src="/static/apple_wallet.svg"></img></a>
             <div class="entry">
                 <h3>Name</h3>
                 <div>{{ user_data.get('first_name', 'Unknown') }} {{ user_data.get('last_name', 'Unknown') }}</div>
@@ -50,14 +50,14 @@
                 <div>{{ "Waitlisted" if (user_data.get('waitlist') and user_data.get('waitlist') >= 2) else "Confirmed" if (user_data.get('waitlist') and user_data.get('waitlist') == 1) else "Not Registered" }}</div>
             </div>
 
-            <a class="btn" href="/join/edit"><i class="fa-solid fa-pencil"></i> Edit</a>
+            <a alt="Edit Profile button" class="btn" href="/join/edit"><i class="fa-solid fa-pencil"></i> Edit</a>
             {% if user_data.get('sudo', False) %}
-                <a class="btn" href="/admin/"><i class="fa-solid fa-lock"></i> Admin</a>
+                <a alt="Admin button" class="btn" href="/admin/"><i class="fa-solid fa-lock"></i> Admin</a>
             {% endif %}
             {% if user_data.get('waitlist') != None or user_data.get('waitlist') != 1 %}
-                <a href="/plinko/join" class="btn"><i class="fa-solid fa-clock"></i> Re-Check Waitlist Status</a>
+                <a alt="Re-Check Waitlist Status button" href="/plinko/join" class="btn"><i class="fa-solid fa-clock"></i> Re-Check Waitlist Status</a>
             {% endif %}
-            <a class="btn" href="#logoff" onclick="logoff()"><i class="fa-solid fa-key"></i> Log Out</a>
+            <a alt="Log Out button" class="btn" href="#logoff" onclick="logoff()"><i class="fa-solid fa-key"></i> Log Out</a>
 
             {% if user_data.get('sudo', False) %}
                 <div class="entry">
@@ -104,7 +104,7 @@
                         <h3>Drop Out</h3>
                         <span>If you cannot compete in HPCC anymore, please release your spot so we can give your seat to someone else. <span class="red">This cannot be undone!</span></span>
                     </div>
-                    <div><a class="btn" href="/plinko/drop-out"><i class="fa-solid fa-person-walking-arrow-right"></i> Drop Out</a></div>
+                    <div><a alt="Drop Out button" class="btn" href="/plinko/drop-out"><i class="fa-solid fa-person-walking-arrow-right"></i> Drop Out</a></div>
                 </div>
             {% endif %}
 
