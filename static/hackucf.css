@@ -1,5 +1,6 @@
 :root {
     --hackucf-gold: #D2990B;
+    --hackucf-gold-safe: #996D0B;
     --hackucf-light-grey: #434343;
     --hackucf-grey: #1C1C1C;
     --hackucf-off-white: #F9F9F9;
@@ -77,7 +78,7 @@ h6 {
 }
 
 .btn {
-    background: var(--hackucf-gold);
+    background: var(--hackucf-gold-safe);
     color: white;
     text-decoration: none;
     font-size: 24px;
