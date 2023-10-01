@@ -87,7 +87,7 @@ window.onload = () => {
     document.querySelector("b").innerText = event;
 
     setInterval(() => {
-        // update();
+        update();
     }, 15 * 1000); // update every 15 seconds
     update();
 }
