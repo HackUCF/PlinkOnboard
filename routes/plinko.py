@@ -142,6 +142,12 @@ async def get_waitlist(request: Request, token: Optional[str] = Cookie(None)):
     return templates.TemplateResponse("checkin_qr.html", {"request": request})
 
 
+@router.get("/dash")
+@Authentication.admin
+async def get_dash(request: Request, token: Optional[str] = Cookie(None)):
+    return templates.TemplateResponse("dash.html", {"request": request})
+
+
 @router.get("/checkin")
 @Authentication.admin
 async def checkin(
