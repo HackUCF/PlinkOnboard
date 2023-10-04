@@ -47,7 +47,7 @@ function scannedCode(result) {
             // Show result to user.
             document.getElementById("name").innerText = `Welcome, ${json.user.first_name}!`;
             document.getElementById("flavor").innerHTML = `<h2><span class="team ${color}">You are on Team ${team_number}.</span><h2><br>
-        <h3>Please head to ${room} by following the <em class="team ${color}">${color}</em> signs.</h3>
+        <h3>Please head to ${room} by following the <em class="mini_team ${color}">${color}</em> signs.</h3>
         <h3>Your table will have a <em>Team ${team_number}</em> sign on it.</h3>
         `;
             showPage("success");

@@ -38,11 +38,11 @@ function populate_column(teams, min, max) {
 function populate_page(teams) {
     let out = `<div id="room_green" class="room">
         <h2 class="team green">ENG1-187</h2>
-        ${populate_column(teams, 0, 7)}
+        ${populate_column(teams, 0, 8)}
     </div>
     <div id="room_purple" class="room">
         <h2 class="team purple">ENG1-188</h2>
-        ${populate_column(teams, 7, 15)}
+        ${populate_column(teams, 8, 15)}
     </div>`;
 
     // Yes, I know this is unsafe.

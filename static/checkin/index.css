@@ -49,12 +49,27 @@ video {
     color: #D2990B;
 }
 
-.team.green {
+.mini_team.green {
     color: #009206;
 }
 
+.mini_team.purple {
+    color: #8e7ac3;
+}
+
+.team.green {
+    background: #009206;
+    color: white;
+}
+
 .team.purple {
-    color: #7D0092;
+    background: #7D0092;
+    color: white;
+}
+
+.team {
+    border-radius: 5px;
+    padding: 8px;
 }
 
 em {
