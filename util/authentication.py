@@ -18,6 +18,31 @@ class Authentication:
     def __init__(self):
         super(Authentication, self).__init__
 
+    def admin_validate(token):
+        if not token:
+            return False
+
+        try:
+            payload = jwt.decode(
+                token,
+                options.get("jwt").get("secret"),
+                algorithms=options.get("jwt").get("algorithm"),
+            )
+            is_admin: bool = payload.get("sudo", False)
+            creation_date: float = payload.get("issued", -1)
+        except Exception:
+            return False
+
+        if not is_admin:
+            return False
+
+        if time.time() > creation_date + options.get("jwt").get("lifetime").get(
+            "sudo"
+        ):
+            return False
+
+        return True
+
     def admin(func):
         @wraps(func)
         async def wrapper(request: Request, token: Optional[str], *args, **kwargs):

@@ -1,0 +1,83 @@
+<html>
+<head>
+    <title>IHPL Scoreboard Hacker 9000</title>
+    <link rel="stylesheet" type="text/css" href="/static/hackucf.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@900&amp;family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <h1>IHPL Scoreboard Hacker 9000</h1>
+        <h2>Popup</h2>
+        <p>This supports <i>any</i> HTML. This is indeed XSS as a Service.</p>
+        <input id="popup_msg" type="text" id="text" placeholder="Message text...">
+        <br><br>
+        <input id="popup_duration" type="number" id="duration" placeholder="Duration (seconds)...">
+        <button id="hack_popup" class="btn">Send</button>
+
+        <h2>Scoreboard URL</h2>
+        <p>Enter an iframe-able URL and replace the scoreboard for a bit!</p>
+        <input id="iframe_url" type="url" id="text" placeholder="URL...">
+        <br><br>
+        <input id="iframe_duration" type="number" id="duration" placeholder="Duration (seconds)...">
+        <button id="hack_iframe" class="btn">Send</button>
+    </div>
+</body>
+<script type="text/javascript">
+    // Get cookie function (borrowed from W3Schools)
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    // WebSockets code (adapted from FastAPI docs)
+    let ws = new WebSocket("wss://hr.plinko.horse/plinko/ws/" + getCookie("token"));
+
+    function sendMessage(msg) {
+        ws.send(JSON.stringify(msg))
+    }
+
+    document.getElementById("hack_popup").onclick = evt => {
+        let msg = document.getElementById("popup_msg").value;
+
+        let duration = document.getElementById("popup_duration").value;
+
+        let resp = {
+            "action": "popup",
+            "msg": msg
+        }
+
+        if (duration !== "")
+            resp.duration = duration;
+
+        sendMessage(resp);
+    }
+
+    document.getElementById("hack_iframe").onclick = evt => {
+        let url = document.getElementById("iframe_url").value;
+
+        let duration = document.getElementById("iframe_duration").value;
+
+        if (duration === "")
+            duration = 60;
+
+        sendMessage({
+            "action": "iframe",
+            "msg": url,
+            "duration": duration
+        })
+    }
+</script>
+</html>

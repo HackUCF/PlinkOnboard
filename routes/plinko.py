@@ -3,7 +3,7 @@ from boto3.dynamodb.conditions import Key, Attr
 
 from jose import JWTError, jwt
 
-from fastapi import APIRouter, Cookie, Request, Response, status
+from fastapi import APIRouter, Cookie, Request, Response, status, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.encoders import jsonable_encoder
@@ -20,6 +20,7 @@ from util.errors import Errors
 from util.options import Options
 from util.discord import Discord
 from util.plinko import Plinko
+from util.websockets import ConnectionManager
 from util.kennelish import Kennelish, Transformer
 
 import asyncio
@@ -30,6 +31,7 @@ templates = Jinja2Templates(directory="templates")
 
 router = APIRouter(prefix="/plinko", tags=["HPCC"], responses=Errors.basic_http())
 
+wsm = ConnectionManager()
 
 @router.get("/")
 async def get_root():
@@ -44,6 +46,33 @@ async def get_root():
             )
         ],
     )
+
+
+@router.websocket("/ws/{token}")
+async def plinko_ws(websocket: WebSocket, token: str):
+    # Token validate
+    valid_token = Authentication.admin_validate(token)
+    if not valid_token:
+        return
+
+
+    client_id = await wsm.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            json_data = json.loads(data)
+
+            """
+            JSON schema:
+            {
+                "action": ("popup" | "iframe"),
+                "msg": str,
+                "duration": str (only for popup)
+            }
+            """
+            await wsm.broadcast(json.dumps(json_data))
+    except WebSocketDisconnect:
+        wsm.disconnect(websocket)
 
 
 @router.get("/waitlist")
@@ -128,7 +157,11 @@ async def get_team_info(
         output.append([])
 
     for user in data:
-        if user.get("assigned_run").lower() == run.lower() and user.get("team_number") and user.get("waitlist") == 1:
+        if (
+            user.get("assigned_run").lower() == run.lower()
+            and user.get("team_number")
+            and user.get("waitlist") == 1
+        ):
             team_idx = int(user.get("team_number")) - 1
 
             output[team_idx].append(user.get("discord_id"))
@@ -146,6 +179,18 @@ async def get_waitlist(request: Request, token: Optional[str] = Cookie(None)):
 @Authentication.admin
 async def get_dash(request: Request, token: Optional[str] = Cookie(None)):
     return templates.TemplateResponse("dash.html", {"request": request})
+
+
+@router.get("/scoreboard")
+@Authentication.admin
+async def get_scoreboard(request: Request, token: Optional[str] = Cookie(None)):
+    return templates.TemplateResponse("scoreboard.html", {"request": request})
+
+
+@router.get("/scoreboard/edit")
+@Authentication.admin
+async def hack_scoreboard(request: Request, token: Optional[str] = Cookie(None)):
+    return templates.TemplateResponse("scoreboard_editor.html", {"request": request})
 
 
 @router.get("/checkin")

@@ -183,6 +183,14 @@ function showUser(userId) {
             "checked_in": !user.checked_in
         })
     };
+    document.getElementById("acceptanceLabel").innerText = user.waitlist !== 1 ? "Force Accept" : "Force Drop Out";
+
+    document.getElementById("toggleAcceptance").onclick = (evt) => {
+        editUser({
+            "id": user.id,
+            "waitlist": user.waitlist !== 1 ? 1 : 0
+        })
+    };
     document.getElementById("checkinLabel").innerText = user.checked_in ? "Check Out" : "Check In";
 
     document.getElementById("sendMessage").onclick = (evt) => {
