@@ -53,24 +53,27 @@ async def plinko_ws(websocket: WebSocket, token: str):
     # Token validate
     valid_token = Authentication.admin_validate(token)
     if not valid_token:
-        return
-
+        wsm.disconnect(websocket)
 
     client_id = await wsm.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()
-            json_data = json.loads(data)
+            try:
+                data = await websocket.receive_text()
+                json_data = json.loads(data)
+                print(json_data)
 
-            """
-            JSON schema:
-            {
-                "action": ("popup" | "iframe"),
-                "msg": str,
-                "duration": str (only for popup)
-            }
-            """
-            await wsm.broadcast(json.dumps(json_data))
+                """
+                JSON schema:
+                {
+                    "action": ("popup" | "iframe"),
+                    "msg": str,
+                    "duration": str (only for popup)
+                }
+                """
+                await wsm.broadcast(json.dumps(json_data))
+            except Exception as e:
+                pass
     except WebSocketDisconnect:
         wsm.disconnect(websocket)
 
