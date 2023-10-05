@@ -58,9 +58,8 @@ async def plinko_ws(websocket: WebSocket, token: str):
     client_id = await wsm.connect(websocket)
     try:
         while True:
-            try:
-                data = await websocket.receive_text()
-                await wsm.broadcast(data)
+            data = await websocket.receive_text()
+            await wsm.broadcast(data)
     except WebSocketDisconnect:
         wsm.disconnect(websocket)
 
