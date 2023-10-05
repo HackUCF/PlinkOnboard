@@ -60,20 +60,7 @@ async def plinko_ws(websocket: WebSocket, token: str):
         while True:
             try:
                 data = await websocket.receive_text()
-                json_data = json.loads(data)
-                print(json_data)
-
-                """
-                JSON schema:
-                {
-                    "action": ("popup" | "iframe"),
-                    "msg": str,
-                    "duration": str (only for popup)
-                }
-                """
-                await wsm.broadcast(json.dumps(json_data))
-            except Exception as e:
-                pass
+                await wsm.broadcast(data)
     except WebSocketDisconnect:
         wsm.disconnect(websocket)
 
