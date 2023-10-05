@@ -282,6 +282,14 @@
             }
         };
 
+        ws.onclose = evt => {
+            location.reload();
+        }
+
+        ws.onerror = evt => {
+            location.reload();
+        }
+
         function sendMessage(msg) {
             ws.send(JSON.stringify(msg))
         }
