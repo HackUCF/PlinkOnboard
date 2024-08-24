@@ -1,17 +1,15 @@
 import time
-
 from functools import wraps
-from jose import JWTError, jwt
 from typing import Optional
 
 from fastapi import Request, status
 from fastapi.responses import RedirectResponse
+from jose import JWTError, jwt
 
 # Import options and errors
 from app.util.errors import Errors
 from app.util.options import Options
 from app.util.settings import Settings
-
 
 
 class Authentication:
@@ -55,7 +53,8 @@ class Authentication:
                 payload = jwt.decode(
                     token,
                     Settings().jwt.secret.get_secret_value(),
-                    algorithms=Settings().jwt.algorithm,)
+                    algorithms=Settings().jwt.algorithm,
+                )
                 is_admin: bool = payload.get("sudo", False)
                 creation_date: float = payload.get("issued", -1)
             except Exception:
@@ -95,7 +94,7 @@ class Authentication:
             token: Optional[str],
             payload: Optional[object],
             *args,
-            **kwargs
+            **kwargs,
         ):
             # Validate auth.
             if not token:

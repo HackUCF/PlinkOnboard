@@ -1,34 +1,37 @@
-from jose import JWTError, jwt
+import asyncio
 import logging
 import uuid
-
-from fastapi import APIRouter, Cookie, Request, Response, status, WebSocket, WebSocketDisconnect, Depends
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.encoders import jsonable_encoder
-
-from pydantic import validator, error_wrappers
-
 from typing import Optional
 
-from sqlalchemy.sql.sqltypes import UUID
+from fastapi import (
+    APIRouter,
+    Cookie,
+    Depends,
+    Request,
+    Response,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+from jose import JWTError, jwt
+from pydantic import error_wrappers, validator
 from sqlalchemy.orm import selectinload
-from app.models.user import UserModelMutable
+from sqlalchemy.sql.sqltypes import UUID
+
 from app.models.info import InfoModel
-from app.models.user import PublicContact, UserModel, DiscordModel
-from app.util.database import get_user, Session, get_session
-
+from app.models.user import DiscordModel, PublicContact, UserModel, UserModelMutable
 from app.util.authentication import Authentication
-from app.util.errors import Errors
-from app.util.options import Options
+from app.util.database import Session, get_session, get_user
 from app.util.discord import Discord
-from app.util.plinko import Plinko
-from app.util.websockets import ConnectionManager
+from app.util.errors import Errors
 from app.util.kennelish import Kennelish, Transformer
+from app.util.options import Options
+from app.util.plinko import Plinko
 from app.util.settings import Settings
-
-import asyncio
-
+from app.util.websockets import ConnectionManager
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +40,7 @@ templates = Jinja2Templates(directory="app/templates")
 router = APIRouter(prefix="/plinko", tags=["HPCC"], responses=Errors.basic_http())
 
 wsm = ConnectionManager()
+
 
 @router.get("/")
 async def get_root():
@@ -120,7 +124,10 @@ async def get_team_info(
 @router.get("/bot")
 @Authentication.admin
 async def get_team_info(
-    request: Request, token: Optional[str] = Cookie(None), run: Optional[str] = "FAIL", session: Session = Depends(get_session)
+    request: Request,
+    token: Optional[str] = Cookie(None),
+    run: Optional[str] = "FAIL",
+    session: Session = Depends(get_session),
 ):
     """
     Expose teams for a given run in a format understood by PlinkoBot.
@@ -204,7 +211,6 @@ async def checkin(
     if member_id == "FAIL" or run == "FAIL":
         return Errors.generate(request, 404, "User Not Found (or run not defined)")
 
-
     user_data = get_user(session, uuid.UUID(member_id))
 
     if not user_data:
@@ -220,7 +226,6 @@ async def checkin(
             "msg": "You are not competing today.",
             "user": user_data,
         }
-
 
     user_data.checked_in = True
     session.add(user_data)

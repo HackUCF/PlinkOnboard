@@ -4,11 +4,11 @@ from uuid import UUID
 # Create the database
 from alembic import script
 from alembic.runtime import migration
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
-from sqlalchemy.orm import selectinload
-from app.models.user import UserModel, DiscordModel
 
+from app.models.user import DiscordModel, UserModel
 from app.util.settings import Settings
 
 DATABASE_URL = Settings().database.url
@@ -44,11 +44,13 @@ def check_current_head(alembic_cfg, connectable):
         context = migration.MigrationContext.configure(connection)
         return set(context.get_current_heads()) == set(directory.get_heads())
 
+
 def get_user(session, user_id: UUID, use_selectinload: bool = False):
     query = session.query(UserModel).filter(UserModel.id == user_id)
     if selectinload:
         query = query.options(selectinload(UserModel.discord))
     return query.one_or_none()
+
 
 def get_user_discord(session, discord_id, use_selectinload: bool = False):
     query = session.query(UserModel).filter(UserModel.discord_id == discord_id)

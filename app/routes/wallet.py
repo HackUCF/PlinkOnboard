@@ -1,27 +1,21 @@
 import json
-import requests
 import os
 import uuid
+from typing import Optional
 
 import boto3
+import requests
+from airpress import PKPass
 from botocore.exceptions import ClientError
-
 from fastapi import APIRouter, Cookie, Request, Response
 from fastapi.responses import HTMLResponse
+from pydantic import error_wrappers, validator
 
-from pydantic import validator, error_wrappers
-
-from typing import Optional
-from app.models.user import PublicContact
 from app.models.info import InfoModel
-
+from app.models.user import PublicContact
 from app.util.authentication import Authentication
 from app.util.errors import Errors
 from app.util.options import Options
-
-from airpress import PKPass
-
-
 
 router = APIRouter(
     prefix="/wallet", tags=["API", "MobileWallet"], responses=Errors.basic_http()

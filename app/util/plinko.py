@@ -1,17 +1,12 @@
 import json
-import requests
 import logging
 import uuid
+
+import requests
+
+from app.models.user import DiscordModel, UserModel
+from app.util.database import Session, get_user
 from app.util.settings import Settings
-from app.util.database import get_user, Session
-from app.models.user import UserModel, DiscordModel
-
-from app.util.settings import Settings
-
-
-
-
-
 
 
 class Plinko:
@@ -35,6 +30,7 @@ class Plinko:
                 return False, data
 
         return True, data
+
     @staticmethod
     def get_team(session: Session, user_id):
         """
@@ -53,8 +49,11 @@ class Plinko:
 
         teammates = []
 
-        all_users_with_team_number = session.query(UserModel).filter(UserModel.team_number == user_team_number).all()
-
+        all_users_with_team_number = (
+            session.query(UserModel)
+            .filter(UserModel.team_number == user_team_number)
+            .all()
+        )
 
         for user in all_users_with_team_number:
             if user.get("assigned_run") == user_run and user.get("waitlist") == 1:
@@ -75,7 +74,6 @@ class Plinko:
         participation_cap = 119
         waitlist_groups = 15  # 150, 180, 210, etc.
         hard_cap = 200
-
 
         data = session.query(UserModel).filter(UserModel.waitlist > 0).all()
         current_count = len(data)

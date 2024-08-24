@@ -132,7 +132,7 @@ class DiscordConfig(BaseModel):
                 "redirect_base",
                 "scope",
                 "secret",
-                "organizer_guild_id"
+                "organizer_guild_id",
             ]
             for field in required_fields:
                 if getattr(values, field) is None:
@@ -146,8 +146,6 @@ elif onboard_env == "dev":
     discord_config = DiscordConfig(enable=False, redirect_base="localhost")
 else:
     logger.warn("Missing discord config")
-
-
 
 
 class GoogleWalletConfig(BaseModel):
@@ -244,7 +242,6 @@ elif onboard_env == "dev":
     hostname = socket.gethostname()
     secret = hashlib.sha256(hostname.encode("utf-8")).hexdigest()
     jwt_config = JwtConfig(secret=secret)
-
 
 
 class KeycloakConfig(BaseModel):

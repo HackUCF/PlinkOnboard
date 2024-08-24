@@ -107,7 +107,6 @@ class PublicContact(BaseModel):
     ops_email: str
 
 
-
 def user_to_dict(model):
     if model is None:
         return None

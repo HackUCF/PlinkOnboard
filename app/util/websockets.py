@@ -1,9 +1,11 @@
 from fastapi import WebSocket
 
+
 class ConnectionManager:
     """
     Adapted from https://fastapi.tiangolo.com/advanced/websockets/
     """
+
     def __init__(self):
         self.active_connections: list[WebSocket] = []
         self.new_id = 0

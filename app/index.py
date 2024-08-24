@@ -1,51 +1,50 @@
-import json, re, uuid
-import os
-import requests
+import json
 import logging
-
-from datetime import datetime, timedelta
+import os
+import re
 import time
+import uuid
+from datetime import datetime, timedelta
 from typing import Optional, Union
+from urllib.parse import urlparse
+
+import requests
 
 # FastAPI
-from fastapi import Depends, FastAPI, HTTPException, status, Request, Response, Cookie
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
+from fastapi import Cookie, Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from jose import JWTError, jwt
 from pydantic import BaseModel
+from requests_oauthlib import OAuth2Session
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
-from jose import JWTError, jwt
-from urllib.parse import urlparse
-from requests_oauthlib import OAuth2Session
+# Import data types
+from app.models.user import DiscordModel, UserModel, user_to_dict
 
-
-# Import the page rendering library
-from app.util.kennelish import Kennelish
+# Import routes
+from app.routes import admin, api, plinko, wallet
 
 # Import middleware
 from app.util.authentication import Authentication
-from app.util.database import get_session, init_db
-from app.util.forms import Forms
+
+# import db functions
+from app.util.database import get_session, get_user, get_user_discord, init_db
+from app.util.discord import Discord
 
 # Import error handling
 from app.util.errors import Errors
+from app.util.forms import Forms
+
+# Import the page rendering library
+from app.util.kennelish import Kennelish
+from app.util.plinko import Plinko
 
 # Import options
 from app.util.settings import Settings
-from app.util.plinko import Plinko
-from app.util.discord import Discord
-
-# Import data types
-from app.models.user import UserModel, DiscordModel, user_to_dict
-
-# import db functions
-from app.util.database import get_session, init_db, get_user, get_user_discord
-
-# Import routes
-from app.routes import api, admin, wallet, plinko
 
 # Init Logger
 logging.basicConfig(
@@ -66,6 +65,7 @@ app.include_router(api.router)
 app.include_router(admin.router)
 app.include_router(wallet.router)
 app.include_router(plinko.router)
+
 
 @app.get("/")
 async def index(request: Request, token: Optional[str] = Cookie(None)):
@@ -92,10 +92,12 @@ async def index(request: Request, token: Optional[str] = Cookie(None)):
             "/discord/new/?redir=/", status_code=status.HTTP_302_FOUND
         )
 
+
 """
 Redirects to Discord for OAuth.
 This is what is linked to by Onboard.
 """
+
 
 @app.get("/discord/new/")
 async def oauth_transformer(redir: str = "/join/2"):
@@ -120,10 +122,12 @@ async def oauth_transformer(redir: str = "/join/2"):
 
     return rr
 
+
 """
 Logs the user into Onboard via Discord OAuth and updates their Discord metadata.
 This is what Discord will redirect to.
 """
+
 
 @app.get("/api/oauth/")
 async def oauth_transformer_new(
@@ -134,7 +138,6 @@ async def oauth_transformer_new(
     redir_endpoint: Optional[str] = Cookie(None),
     session: Session = Depends(get_session),
 ):
-
     # Open redirect check
     if redir == "_redir":
         redir = redir_endpoint or "/join/2"
@@ -176,38 +179,37 @@ async def oauth_transformer_new(
 
     is_new = False
 
-
     if user:
         member_id = user.id
         do_sudo = user.sudo
     else:
-            if not discordData.get("verified"):
-                tr = Errors.generate(
-                    request,
-                    403,
-                    "Discord email not verfied please try again",
-                )
-                return tr
-            infra_email = ""
-            discord_id = discordData["id"]
-            Discord().join_plinko_server(discord_id, token)
-            user = UserModel(discord_id=discord_id)
-            discord_data = {
-                "email": discordData.get("email"),
-                "mfa": discordData.get("mfa_enabled"),
-                "avatar": f"https://cdn.discordapp.com/avatars/{discordData['id']}/{discordData['avatar']}.png?size=512",
-                "banner": f"https://cdn.discordapp.com/banners/{discordData['id']}/{discordData['banner']}.png?size=1536",
-                "color": discordData.get("accent_color"),
-                "nitro": discordData.get("premium_type"),
-                "locale": discordData.get("locale"),
-                "username": discordData.get("username"),
-                "user_id": user.id,
-            }
-            discord_model = DiscordModel(**discord_data)
-            user.discord = discord_model
-            session.add(user)
-            session.commit()
-            session.refresh(user)
+        if not discordData.get("verified"):
+            tr = Errors.generate(
+                request,
+                403,
+                "Discord email not verfied please try again",
+            )
+            return tr
+        infra_email = ""
+        discord_id = discordData["id"]
+        Discord().join_plinko_server(discord_id, token)
+        user = UserModel(discord_id=discord_id)
+        discord_data = {
+            "email": discordData.get("email"),
+            "mfa": discordData.get("mfa_enabled"),
+            "avatar": f"https://cdn.discordapp.com/avatars/{discordData['id']}/{discordData['avatar']}.png?size=512",
+            "banner": f"https://cdn.discordapp.com/banners/{discordData['id']}/{discordData['banner']}.png?size=1536",
+            "color": discordData.get("accent_color"),
+            "nitro": discordData.get("premium_type"),
+            "locale": discordData.get("locale"),
+            "username": discordData.get("username"),
+            "user_id": user.id,
+        }
+        discord_model = DiscordModel(**discord_data)
+        user.discord = discord_model
+        session.add(user)
+        session.commit()
+        session.refresh(user)
 
     # Create JWT. This should be the only way to issue JWTs.
     jwtData = {
@@ -252,12 +254,18 @@ async def oauth_transformer_new(
 
     return rr
 
+
 """
 Renders the landing page for the sign-up flow.
 """
 
+
 @app.get("/join/")
-async def join(request: Request, token: Optional[str] = Cookie(None), session: Session = Depends(get_session)):
+async def join(
+    request: Request,
+    token: Optional[str] = Cookie(None),
+    session: Session = Depends(get_session),
+):
     signups, wl_status, group = Plinko.get_waitlist_status(session)
     if token is None:
         return templates.TemplateResponse(
@@ -281,9 +289,11 @@ async def join(request: Request, token: Optional[str] = Cookie(None), session: S
 
         return RedirectResponse("/join/2/", status_code=status.HTTP_302_FOUND)
 
+
 """
 Renders a basic "my membership" page
 """
+
 
 @app.get("/profile/")
 @Authentication.member
@@ -300,12 +310,18 @@ async def profile(
 
     return templates.TemplateResponse(
         "profile.html",
-        {"request": request, "user_data": user_to_dict(user_data), "team_data": team_data},
+        {
+            "request": request,
+            "user_data": user_to_dict(user_data),
+            "team_data": team_data,
+        },
     )
+
 
 """
 Renders a Kennelish form page, complete with stylings and UI controls.
 """
+
 
 @app.get("/join/{num}/")
 @Authentication.member
@@ -340,15 +356,18 @@ async def forms(
         },
     )
 
+
 @app.get("/final")
 async def final(request: Request):
     return templates.TemplateResponse("done.html", {"request": request})
+
 
 @app.get("/logout")
 async def logout(request: Request):
     rr = RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     rr.delete_cookie(key="token")
     return rr
+
 
 if __name__ == "__main__":
     import uvicorn

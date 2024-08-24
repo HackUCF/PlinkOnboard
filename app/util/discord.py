@@ -1,10 +1,9 @@
 import json
-import requests
 import logging
 
+import requests
+
 from app.util.settings import Settings
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -78,18 +77,18 @@ class Discord:
         return req.status_code < 400
 
     def join_plinko_server(self, discord_id, token):
-            if not Settings().discord.enable:
-                return
-            if  self.check_presence(discord_id, Settings().discord.guild_id) != "joined":
-                logger.info(f"Joining {discord_id} to Plinko Discord")
-                headers = {
-                    "Authorization": f"Bot {Settings().discord.bot_token.get_secret_value()}",
-                    "Content-Type": "application/json",
-                    "X-Audit-Log-Reason": "Hack@UCF OnboardLite Bot",
-                }
-                put_join_guild = {"access_token": token["access_token"]}
-                requests.put(
-                    f"https://discordapp.com/api/guilds/{Settings().discord.guild_id}/members/{discord_id}",
-                    headers=headers,
-                    data=json.dumps(put_join_guild),
+        if not Settings().discord.enable:
+            return
+        if self.check_presence(discord_id, Settings().discord.guild_id) != "joined":
+            logger.info(f"Joining {discord_id} to Plinko Discord")
+            headers = {
+                "Authorization": f"Bot {Settings().discord.bot_token.get_secret_value()}",
+                "Content-Type": "application/json",
+                "X-Audit-Log-Reason": "Hack@UCF OnboardLite Bot",
+            }
+            put_join_guild = {"access_token": token["access_token"]}
+            requests.put(
+                f"https://discordapp.com/api/guilds/{Settings().discord.guild_id}/members/{discord_id}",
+                headers=headers,
+                data=json.dumps(put_join_guild),
             )
