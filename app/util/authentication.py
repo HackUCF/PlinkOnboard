@@ -8,10 +8,10 @@ from fastapi import Request, status
 from fastapi.responses import RedirectResponse
 
 # Import options and errors
-from util.errors import Errors
-from util.options import Options
+from app.util.errors import Errors
+from app.util.options import Options
+from app.util.settings import Settings
 
-options = Options.fetch()
 
 
 class Authentication:
@@ -25,8 +25,8 @@ class Authentication:
         try:
             payload = jwt.decode(
                 token,
-                options.get("jwt").get("secret"),
-                algorithms=options.get("jwt").get("algorithm"),
+                Settings().jwt.secret.get_secret_value(),
+                algorithms=Settings().jwt.algorithm,
             )
             is_admin: bool = payload.get("sudo", False)
             creation_date: float = payload.get("issued", -1)
@@ -36,9 +36,7 @@ class Authentication:
         if not is_admin:
             return False
 
-        if time.time() > creation_date + options.get("jwt").get("lifetime").get(
-            "sudo"
-        ):
+        if time.time() > creation_date + Settings().jwt.lifetime_sudo:
             return False
 
         return True
@@ -56,9 +54,8 @@ class Authentication:
             try:
                 payload = jwt.decode(
                     token,
-                    options.get("jwt").get("secret"),
-                    algorithms=options.get("jwt").get("algorithm"),
-                )
+                    Settings().jwt.secret.get_secret_value(),
+                    algorithms=Settings().jwt.algorithm,)
                 is_admin: bool = payload.get("sudo", False)
                 creation_date: float = payload.get("issued", -1)
             except Exception:
@@ -78,9 +75,7 @@ class Authentication:
                     essay="If you think this is an error, please try logging in again.",
                 )
 
-            if time.time() > creation_date + options.get("jwt").get("lifetime").get(
-                "sudo"
-            ):
+            if time.time() > creation_date + Settings().jwt.lifetime_sudo:
                 return Errors.generate(
                     request,
                     403,
@@ -112,8 +107,8 @@ class Authentication:
             try:
                 payload = jwt.decode(
                     token,
-                    options.get("jwt").get("secret"),
-                    algorithms=options.get("jwt").get("algorithm"),
+                    Settings().jwt.secret.get_secret_value(),
+                    algorithms=Settings().jwt.algorithm,
                 )
                 creation_date: float = payload.get("issued", -1)
             except Exception:
@@ -125,9 +120,7 @@ class Authentication:
                 tr.delete_cookie(key="token")
                 return tr
 
-            if time.time() > creation_date + options.get("jwt").get("lifetime").get(
-                "user"
-            ):
+            if time.time() > creation_date + Settings().jwt.lifetime_user:
                 return Errors.generate(
                     request,
                     403,

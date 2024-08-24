@@ -12,16 +12,16 @@ from fastapi.responses import HTMLResponse
 from pydantic import validator, error_wrappers
 
 from typing import Optional
-from models.user import PublicContact
-from models.info import InfoModel
+from app.models.user import PublicContact
+from app.models.info import InfoModel
 
-from util.authentication import Authentication
-from util.errors import Errors
-from util.options import Options
+from app.util.authentication import Authentication
+from app.util.errors import Errors
+from app.util.options import Options
 
 from airpress import PKPass
 
-options = Options.fetch()
+
 
 router = APIRouter(
     prefix="/wallet", tags=["API", "MobileWallet"], responses=Errors.basic_http()

@@ -1,9 +1,8 @@
-import boto3, json, requests
-from boto3.dynamodb.conditions import Key, Attr
-
 from jose import JWTError, jwt
+import logging
+import uuid
 
-from fastapi import APIRouter, Cookie, Request, Response, status, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Cookie, Request, Response, status, WebSocket, WebSocketDisconnect, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.encoders import jsonable_encoder
@@ -11,23 +10,29 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import validator, error_wrappers
 
 from typing import Optional
-from models.user import UserModelMutable
-from models.info import InfoModel
-from models.user import PublicContact
 
-from util.authentication import Authentication
-from util.errors import Errors
-from util.options import Options
-from util.discord import Discord
-from util.plinko import Plinko
-from util.websockets import ConnectionManager
-from util.kennelish import Kennelish, Transformer
+from sqlalchemy.sql.sqltypes import UUID
+from sqlalchemy.orm import selectinload
+from app.models.user import UserModelMutable
+from app.models.info import InfoModel
+from app.models.user import PublicContact, UserModel, DiscordModel
+from app.util.database import get_user, Session, get_session
+
+from app.util.authentication import Authentication
+from app.util.errors import Errors
+from app.util.options import Options
+from app.util.discord import Discord
+from app.util.plinko import Plinko
+from app.util.websockets import ConnectionManager
+from app.util.kennelish import Kennelish, Transformer
+from app.util.settings import Settings
 
 import asyncio
 
-options = Options.fetch()
 
-templates = Jinja2Templates(directory="templates")
+logger = logging.getLogger(__name__)
+
+templates = Jinja2Templates(directory="app/templates")
 
 router = APIRouter(prefix="/plinko", tags=["HPCC"], responses=Errors.basic_http())
 
@@ -65,8 +70,10 @@ async def plinko_ws(websocket: WebSocket, token: str):
 
 
 @router.get("/waitlist")
-async def get_waitlist():
-    signups, waitlist_status, group = Plinko.get_waitlist_status()
+async def get_waitlist(
+    session: Session = Depends(get_session),
+):
+    signups, waitlist_status, group = Plinko.get_waitlist_status(session)
 
     return {"signups": signups, "status": waitlist_status, "group": group}
 
@@ -77,21 +84,16 @@ async def get_waitlist(
     request: Request,
     token: Optional[str] = Cookie(None),
     payload: Optional[object] = {},
+    session: Session = Depends(get_session),
 ):
     """
     Quit HPCC.
     """
-
-    dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
-
-    # user_data = table.get_item(Key={"id": payload.get("id")}).get("Item", None)
-
-    table.update_item(
-        Key={"id": payload.get("id")},
-        UpdateExpression="SET waitlist = :waitlist",
-        ExpressionAttributeValues={":waitlist": 0},
-    )
+    logger.info(f"User {payload.get('id')} is dropping out of HPCC.")
+    user_data = get_user(session, uuid.UUID(payload.get("id")))
+    user_data.waitlist = 0
+    session.add(user_data)
+    session.commit()
 
     return RedirectResponse("/profile/", status_code=status.HTTP_302_FOUND)
 
@@ -102,12 +104,13 @@ async def get_team_info(
     request: Request,
     token: Optional[str] = Cookie(None),
     payload: Optional[object] = {},
+    session: Session = Depends(get_session),
 ):
     """
     Gets team information of a given user.
     """
 
-    team = Plinko.get_team(payload.get("id"))
+    team = Plinko.get_team(session, payload.get("id"))
     if team:
         return team
     else:
@@ -117,7 +120,7 @@ async def get_team_info(
 @router.get("/bot")
 @Authentication.admin
 async def get_team_info(
-    request: Request, token: Optional[str] = Cookie(None), run: Optional[str] = "FAIL"
+    request: Request, token: Optional[str] = Cookie(None), run: Optional[str] = "FAIL", session: Session = Depends(get_session)
 ):
     """
     Expose teams for a given run in a format understood by PlinkoBot.
@@ -127,11 +130,14 @@ async def get_team_info(
         return Errors.generate(request, 404, "Missing ?run")
 
     # Get all participants
-    dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
-    data = table.scan().get("Items", None)
-
-    output = []
+    statement = select(UserModel).options(
+        selectinload(UserModel.discord), selectinload(UserModel.ethics_form)
+    )
+    users = session.exec(statement)
+    data = []
+    for user in users:
+        user = user_to_dict(user)
+        data.append(user)
 
     # Find hightest index.
     team_count = -1
@@ -189,6 +195,7 @@ async def checkin(
     token: Optional[str] = Cookie(None),
     member_id: Optional[str] = "FAIL",
     run: Optional[str] = "FAIL",
+    session: Session = Depends(get_session),
 ):
     """
     Check-in a user for a given run.
@@ -197,10 +204,8 @@ async def checkin(
     if member_id == "FAIL" or run == "FAIL":
         return Errors.generate(request, 404, "User Not Found (or run not defined)")
 
-    dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
 
-    user_data = table.get_item(Key={"id": member_id}).get("Item", None)
+    user_data = get_user(session, uuid.UUID(member_id))
 
     if not user_data:
         return {
@@ -216,13 +221,10 @@ async def checkin(
             "user": user_data,
         }
 
-    table.update_item(
-        Key={"id": member_id},
-        UpdateExpression="SET checked_in = :checked_in",
-        ExpressionAttributeValues={":checked_in": True},
-    )
 
-    user_data["checked_in"] = True
+    user_data.checked_in = True
+    session.add(user_data)
+    session.commit()
 
     team_number = -1
     if user_data.get("team_number"):
@@ -237,17 +239,15 @@ async def join_waitlist(
     request: Request,
     token: Optional[str] = Cookie(None),
     payload: Optional[object] = {},
+    session: Session = Depends(get_session),
 ):
-    signups, waitlist_status, group = Plinko.get_waitlist_status(plus_one=True)
+    signups, waitlist_status, group = Plinko.get_waitlist_status(session, plus_one=True)
     print(waitlist_status)
 
-    # start adding the person to the list!
-    dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
+    # start adding the person to the list
+    user_data = get_user(session, uuid.UUID(payload.get("id")))
 
-    user_data = table.get_item(Key={"id": payload.get("id")}).get("Item", None)
-
-    if user_data.get("sudo") == True:
+    if user_data.sudo == True:
         return templates.TemplateResponse(
             "denied.html",
             {
@@ -257,13 +257,13 @@ async def join_waitlist(
         )
 
     if waitlist_status == "Closed":
-        print(user_data.get("waitlist", -1))
-        if user_data.get("waitlist", -1) == 1:
+        logger.info(user_data.waitlist, -1)
+        if user_data.waitlist == 1:
             return templates.TemplateResponse("approved.html", {"request": request})
-        elif user_data.get("waitlist", -1) > 1:
+        elif user_data.waitlist > 1:
             return templates.TemplateResponse(
                 "waitlist.html",
-                {"request": request, "group": user_data.get("waitlist")},
+                {"request": request, "group": user_data.waitlist},
             )
         else:
             return templates.TemplateResponse(
@@ -276,7 +276,7 @@ async def join_waitlist(
 
     # Check if user is an Organizer (i.e., they are on the banned guild)
     check_organizer = Discord.check_presence(
-        user_data.get("discord_id"), options.get("discord", {}).get("banned_guild_id")
+        user_data.discord_id, Settings().discord.organizer_guild_id
     )
     if check_organizer:
         return templates.TemplateResponse(
@@ -294,8 +294,8 @@ async def join_waitlist(
     # If spots open...
     if elgible:
         # If user already has a spot, show it.
-        if user_data.get("waitlist") != None:
-            old_group_if_rechecking = user_data.get("waitlist", 0)
+        if user_data.waitlist != None:
+            old_group_if_rechecking = user_data.waitlist
             if old_group_if_rechecking == 1:
                 return templates.TemplateResponse("approved.html", {"request": request})
 
@@ -307,12 +307,10 @@ async def join_waitlist(
                 )
 
         # Add to waitlist (or roster)
-        print(f"We can update -> {group}")
-        table.update_item(
-            Key={"id": payload.get("id")},
-            UpdateExpression="SET waitlist = :waitlist",
-            ExpressionAttributeValues={":waitlist": group},
-        )
+        logger.info(f"We can update -> {group}")
+        user_data.waitlist = group
+        session.add(user_data)
+        session.commit()
 
         if waitlist_status == "Waitlisted":
             return templates.TemplateResponse(
