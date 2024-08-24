@@ -1,8 +1,8 @@
 """Initial Commit
 
-Revision ID: 3337a749d431
+Revision ID: d1a00822bc48
 Revises:
-Create Date: 2024-08-23 13:09:07.970763
+Create Date: 2024-08-24 17:46:30.644010
 
 """
 
@@ -13,7 +13,7 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "3337a749d431"
+revision: str = "d1a00822bc48"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -34,6 +34,7 @@ def upgrade() -> None:
         sa.Column("sudo", sa.Boolean(), nullable=True),
         sa.Column("discord_id", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("hackucf_id", sa.Uuid(), nullable=True),
+        sa.Column("hackucf_member", sa.Boolean(), nullable=True),
         sa.Column("experience", sa.Integer(), nullable=True),
         sa.Column("waitlist", sa.Integer(), nullable=True),
         sa.Column("team_number", sa.Integer(), nullable=True),

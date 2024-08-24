@@ -177,12 +177,9 @@ async def oauth_transformer_new(
 
     # TODO implament Onboard Federation
 
-    is_new = False
-
-    if user:
-        member_id = user.id
-        do_sudo = user.sudo
-    else:
+    if not user:
+        discord_id = discordData["id"]
+        user = UserModel(discord_id=discord_id)
         if not discordData.get("verified"):
             tr = Errors.generate(
                 request,
@@ -190,10 +187,37 @@ async def oauth_transformer_new(
                 "Discord email not verfied please try again",
             )
             return tr
+        cookies = {"token": Settings().hack_ucf_onboard.token.get_secret_value()}
+        url = (
+            Settings().hack_ucf_onboard.url
+            + "/admin/get_by_snowflake"
+            + "?discord_id="
+            + discord_id
+        )
+        hackucf_data = requests.get(url, cookies=cookies)
+        if hackucf_data.status_code == 200 and Settings().hack_ucf_onboard.enable:
+            hackucf_data = hackucf_data.json().get("data")
+            user.hackucf_id = uuid.UUID(hackucf_data.get("id"))
+            user.first_name = hackucf_data.get("first_name")
+            user.last_name = hackucf_data.get("surname")
+            user.experience = hackucf_data.get("experience")
+            user.hackucf_member = hackucf_data.get("is_full_member")
+            user.sudo = hackucf_data.get("sudo")
+            logger.info(
+                "User found in Hackucf\n Plinko ID: "
+                + str(user.id)
+                + "\n Hackucf ID: "
+                + str(user.hackucf_id)
+            )
+
+        else:
+            logger.info(
+                discord_id + "not found in Hackucf" + str(hackucf_data.status_code)
+            )
+
         infra_email = ""
-        discord_id = discordData["id"]
+
         Discord().join_plinko_server(discord_id, token)
-        user = UserModel(discord_id=discord_id)
         discord_data = {
             "email": discordData.get("email"),
             "mfa": discordData.get("mfa_enabled"),
@@ -216,8 +240,8 @@ async def oauth_transformer_new(
         "discord": token,
         "name": discordData["username"],
         "pfp": discordData.get("avatar"),
-        "id": str(member_id),
-        "sudo": do_sudo,
+        "id": str(user.id),
+        "sudo": user.sudo,
         "issued": time.time(),
     }
     bearer = jwt.encode(
@@ -281,7 +305,7 @@ async def join(
 
             user_data = get_user(session, uuid.UUID(payload.get("id")))
 
-            if user_data.get("waitlist") and user_data.get("waitlist") > 0:
+            if user_data.waitlist and user_data.waitlist > 0:
                 return RedirectResponse("/profile", status_code=status.HTTP_302_FOUND)
 
         except Exception as e:

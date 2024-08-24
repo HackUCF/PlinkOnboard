@@ -281,6 +281,15 @@ class TelemetryConfig(BaseModel):
 telemetry_config = TelemetryConfig(**settings.get("telemetry", {}))
 
 
+class OnboardFederationConfig(BaseModel):
+    url: Optional[str] = None
+    token: Optional[SecretStr] = None
+    enable: Optional[bool] = False
+
+
+hack_ucf_onboard = OnboardFederationConfig(**settings.get("hack_ucf_onboard", {}))
+
+
 class DatabaseConfig(BaseModel):
     url: str
 
@@ -323,4 +332,5 @@ class Settings(BaseSettings, metaclass=SingletonBaseSettingsMeta):
     keycloak: KeycloakConfig = keycloak_config
     google_wallet: GoogleWalletConfig = google_wallet_config
     telemetry: Optional[TelemetryConfig] = telemetry_config
+    hack_ucf_onboard: OnboardFederationConfig = hack_ucf_onboard
     env: Optional[str] = onboard_env

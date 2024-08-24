@@ -46,6 +46,7 @@ class UserModel(SQLModel, table=True):
 
     # Collected from HackUCF Onboard
     hackucf_id: Optional[uuid.UUID] = None
+    hackucf_member: Optional[bool] = False
     experience: Optional[int] = None
 
     # HPCC data (internal)
