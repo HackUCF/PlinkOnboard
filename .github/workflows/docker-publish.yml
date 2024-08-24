@@ -6,7 +6,7 @@ on:
       - main
       - dev
   schedule:
-    - cron: '21 18 * * 3'
+    - cron: "21 18 * * 3"
 
 jobs:
   build-and-push:
@@ -34,7 +34,7 @@ jobs:
         run: docker build --target prod -t onboardlite:${{ steps.extract_branch.outputs.branch }} .
 
       - name: Tag Docker image
-        run: docker tag onboardlite:${{ steps.extract_branch.outputs.branch }} ghcr.io/hackucf/onboardlite:${{ steps.extract_branch.outputs.branch }}
+        run: docker tag onboardlite:${{ steps.extract_branch.outputs.branch }} ghcr.io/hackucf/plinkonboard:${{ steps.extract_branch.outputs.branch }}
 
       - name: Push Docker image
         run: docker push ghcr.io/hackucf/onboardlite:${{ steps.extract_branch.outputs.branch }}
