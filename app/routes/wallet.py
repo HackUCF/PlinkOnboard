@@ -6,7 +6,6 @@ from typing import Optional
 
 import requests
 from airpress import PKPass
-from botocore.exceptions import ClientError
 from fastapi import APIRouter, Cookie, Depends, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from google.auth import crypt, jwt
