@@ -12,7 +12,7 @@ def run_uvicorn():
 
     command = [
         "uvicorn",
-        "app.main:app",
+        "app.index:app",
         "--host",
         host,
         "--port",
