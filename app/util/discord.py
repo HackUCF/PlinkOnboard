@@ -25,6 +25,8 @@ class Discord:
 
     @staticmethod
     def check_presence(discord_id, guild_id):
+        if not Settings().discord.enable:
+            return False
         """
         Checks if member is in a guild.
         """
