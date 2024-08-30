@@ -1,17 +1,12 @@
 import json
+import logging
+import uuid
+
 import requests
-import boto3
-from boto3.dynamodb.conditions import Key, Attr
 
-from util.options import Options
-
-options = Options.fetch()
-
-headers = {
-    "Authorization": f"Bot {options.get('discord', {}).get('bot_token')}",
-    "Content-Type": "application/json",
-    "X-Audit-Log-Reason": "Hack@UCF OnboardLite Bot",
-}
+from app.models.user import DiscordModel, UserModel
+from app.util.database import Session, get_user
+from app.util.settings import Settings
 
 
 class Plinko:
@@ -22,11 +17,12 @@ class Plinko:
     def __init__(self):
         pass
 
+    @staticmethod
     def check_elgible(user_data):
         data = {
-            "has_first_name": user_data.get("first_name") != None,
-            "has_last_name": user_data.get("last_name") != None,
-            "kh_checked": user_data.get("did_agree_to_do_kh") == True,
+            "has_first_name": user_data.first_name != None,
+            "has_last_name": user_data.last_name != None,
+            "kh_checked": user_data.did_agree_to_do_kh == True,
         }
 
         for value in data.values():
@@ -35,27 +31,29 @@ class Plinko:
 
         return True, data
 
-    def get_team(user_id):
+    @staticmethod
+    def get_team(session: Session, user_id):
         """
         Get team information for a given user, including team-mates
         """
 
         # Database connection to get user...
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
-        user_data = table.get_item(Key={"id": user_id}).get("Item", None)
 
-        user_team_number = user_data.get("team_number")
-        user_run = user_data.get("assigned_run")
+        user_data = get_user(session, uuid.UUID(user_id))
+
+        user_team_number = user_data.team_number
+        user_run = user_data.assigned_run
 
         if not user_team_number or not user_run:
             return None
 
         teammates = []
 
-        all_users_with_team_number = table.scan(
-            FilterExpression=Attr("team_number").eq(user_team_number)
-        ).get("Items", None)
+        all_users_with_team_number = (
+            session.query(UserModel)
+            .filter(UserModel.team_number == user_team_number)
+            .all()
+        )
 
         for user in all_users_with_team_number:
             if user.get("assigned_run") == user_run and user.get("waitlist") == 1:
@@ -68,7 +66,8 @@ class Plinko:
 
         return {"number": user_team_number, "run": user_run, "members": teammates}
 
-    def get_waitlist_status(plus_one=False):
+    @staticmethod
+    def get_waitlist_status(session: Session, plus_one=False):
         """
         Return waitlist metadata as (current_count, status, group #)
         """
@@ -76,15 +75,11 @@ class Plinko:
         waitlist_groups = 15  # 150, 180, 210, etc.
         hard_cap = 200
 
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
-        data = table.scan(FilterExpression=Attr("waitlist").gt(0)).get(
-            "Items", None
-        )  # on a list
+        data = session.query(UserModel).filter(UserModel.waitlist > 0).all()
         current_count = len(data)
         currently_registered = 0
         for user in data:
-            if user.get("waitlist", 0) == 1:
+            if user.waitlist == 1:
                 currently_registered += 1
 
         if plus_one:

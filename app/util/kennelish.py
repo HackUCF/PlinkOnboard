@@ -1,5 +1,9 @@
-from typing import Literal, Set
-from pydantic import BaseModel, create_model, constr
+import logging
+from typing import Literal
+
+from pydantic import constr, create_model
+
+logger = logging.getLogger(__name__)
 
 
 # Known bug: You cannot pre-fill data stored in second-level DynamoDB levels.
@@ -31,8 +35,6 @@ class Kennelish:
                     output += Kennelish.text(entry, user_data, "email")
                 elif entry["input"] == "nid":
                     output += Kennelish.text(entry, user_data, "nid")
-                elif entry["input"] == "tel":
-                    output += Kennelish.text(entry, user_data, "tel")
                 elif entry["input"] == "text":
                     output += Kennelish.text(entry, user_data)
                 elif entry["input"] == "radio":
@@ -50,7 +52,7 @@ class Kennelish:
                 else:
                     output += Kennelish.invalid(entry)
             except Exception as e:
-                print(e)
+                logger.exception(e)
                 output += Kennelish.invalid({"input": "Malformed object"})
                 continue
 
@@ -67,7 +69,7 @@ class Kennelish:
         return output
 
     def signature(entry, user_data=None):
-        output = f"<div name='{entry.get('key')}' class='signature'>By submitting this form, you, {user_data.get('first_name', 'HackUCF Member #' + user_data.get('id'))} {user_data.get('surname', '')}, agree to the above terms. This form will be time-stamped.</div>"
+        output = f"<div name='{entry.get('key')}' class='signature'>By submitting this form, you, {user_data.get('first_name', 'HackUCF Member #' + str(user_data.get('id')))} {user_data.get('surname', '')}, agree to the above terms. This form will be time-stamped.</div>"
         return output
 
     def text(entry, user_data=None, inp_type="text"):
@@ -82,7 +84,7 @@ class Kennelish:
             else:
                 prefill = user_data.get(key, "")
 
-            if prefill == None:
+            if prefill is None:
                 prefill = ""
         else:
             prefill = ""
@@ -96,8 +98,6 @@ class Kennelish:
             )
         elif inp_type == "nid":
             regex_pattern = ' pattern="^([a-z]{2}[0-9]{6})$"'
-        elif inp_type == "tel":
-            regex_pattern = ' pattern="^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$"'
 
         output = f"<input class='kennelish_input'{' required' if entry.get('required') else ' '}{regex_pattern} name='{entry.get('key', '')}' type='{'text' if inp_type == 'nid' else inp_type}' value='{prefill}' placeholder='{entry.get('label', '')}' />"
         return Kennelish.label(entry, output)
@@ -199,9 +199,7 @@ class Transformer:
         super(Transformer, self).__init__()
 
     def kwargs_to_str(kwargs):
-        print(dir(kwargs))
         for k, v in kwargs.items():
-            print(k, v)
             kwargs[k] = str(v)
 
         return kwargs
@@ -209,7 +207,7 @@ class Transformer:
     def kennelish_to_form(json):
         obj = {}
 
-        if json == None:
+        if json is None:
             return {}
 
         for el in json:
@@ -227,34 +225,32 @@ class Transformer:
 
             # For emails (specified domain)
             elif element_type == "email" and el.get("domain", False):
-                regex_constr = constr(
-                    regex="([A-Za-z0-9.-_+]+)@" + el.get("domain").lower()
-                )
+                domain_regex = rf'^[A-Za-z0-9._%+-]+@{el.get("domain").lower()}$'
+                regex_constr = constr(pattern=domain_regex)
                 obj[el.get("key")] = (regex_constr, None)
 
             # For emails (any domain)
             elif element_type == "email":
                 regex_constr = constr(
-                    regex="([A-Za-z0-9.-_+]+)@[A-Za-z0-9-]+(.[A-Za-z-]{2,})"
+                    pattern=r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
                 )
                 obj[el.get("key")] = (regex_constr, None)
 
             # For NIDs
             elif element_type == "nid":
-                regex_constr = constr(regex="(^([a-z]{2}[0-9]{6})$)")
-                obj[el.get("key")] = (regex_constr, None)
-
-            # For phone numbers
-            elif element_type == "tel":
-                regex_constr = constr(regex="(^(\\+)?([0-9]{9,})$)")
+                regex_constr = constr(pattern="(^([a-z]{2}[0-9]{6})$)")
                 obj[el.get("key")] = (regex_constr, None)
 
             # For numbers
             elif element_type == "slider":
                 obj[el.get("key")] = (int, None)
 
+            # Timestamps
+            elif element_type == "signature":
+                obj[el.get("key")] = (int, None)
+
             # For arbitrary strings.
-            elif el.get("key") != None:
+            elif el.get("key") is not None:
                 obj[el.get("key")] = (str, None)
 
         return obj

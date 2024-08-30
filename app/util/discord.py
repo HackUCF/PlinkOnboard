@@ -1,15 +1,18 @@
 import json
+import logging
+
 import requests
 
-from util.options import Options
+from app.util.settings import Settings
 
-options = Options.fetch()
+logger = logging.getLogger(__name__)
 
-headers = {
-    "Authorization": f"Bot {options.get('discord', {}).get('bot_token')}",
-    "Content-Type": "application/json",
-    "X-Audit-Log-Reason": "Hack@UCF OnboardLite Bot",
-}
+if Settings().discord.enable:
+    headers = {
+        "Authorization": f"Bot {Settings().discord.bot_token.get_secret_value() }",
+        "Content-Type": "application/json",
+        "X-Audit-Log-Reason": "Hack@UCF OnboardLite Bot",
+    }
 
 
 class Discord:
@@ -20,6 +23,7 @@ class Discord:
     def __init__(self):
         pass
 
+    @staticmethod
     def check_presence(discord_id, guild_id):
         """
         Checks if member is in a guild.
@@ -38,7 +42,7 @@ class Discord:
         discord_id = str(discord_id)
 
         req = requests.put(
-            f"https://discord.com/api/guilds/{options.get('discord', {}).get('guild_id')}/members/{discord_id}/roles/{role_id}",
+            f"https://discord.com/api/guilds/{Settings().discord.guild_id}/members/{discord_id}/roles/{Settings.discord.member_role}",
             headers=headers,
         )
 
@@ -71,3 +75,20 @@ class Discord:
         print(req.text)
 
         return req.status_code < 400
+
+    def join_plinko_server(self, discord_id, token):
+        if not Settings().discord.enable:
+            return
+        if self.check_presence(discord_id, Settings().discord.guild_id) != "joined":
+            logger.info(f"Joining {discord_id} to Plinko Discord")
+            headers = {
+                "Authorization": f"Bot {Settings().discord.bot_token.get_secret_value()}",
+                "Content-Type": "application/json",
+                "X-Audit-Log-Reason": "Hack@UCF OnboardLite Bot",
+            }
+            put_join_guild = {"access_token": token["access_token"]}
+            requests.put(
+                f"https://discordapp.com/api/guilds/{Settings().discord.guild_id}/members/{discord_id}",
+                headers=headers,
+                data=json.dumps(put_join_guild),
+            )
