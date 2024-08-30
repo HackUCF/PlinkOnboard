@@ -187,33 +187,35 @@ async def oauth_transformer_new(
                 "Discord email not verfied please try again",
             )
             return tr
-        cookies = {"token": Settings().hack_ucf_onboard.token.get_secret_value()}
-        url = (
-            Settings().hack_ucf_onboard.url
-            + "/admin/get_by_snowflake"
-            + "?discord_id="
-            + discord_id
-        )
-        hackucf_data = requests.get(url, cookies=cookies)
-        if hackucf_data.status_code == 200 and Settings().hack_ucf_onboard.enable:
-            hackucf_data = hackucf_data.json().get("data")
-            user.hackucf_id = uuid.UUID(hackucf_data.get("id"))
-            user.first_name = hackucf_data.get("first_name")
-            user.last_name = hackucf_data.get("surname")
-            user.experience = hackucf_data.get("experience")
-            user.hackucf_member = hackucf_data.get("is_full_member")
-            user.sudo = hackucf_data.get("sudo")
-            logger.info(
-                "User found in Hackucf\n Plinko ID: "
-                + str(user.id)
-                + "\n Hackucf ID: "
-                + str(user.hackucf_id)
+        if Settings().hack_ucf_onboard.enable:
+            cookies = {"token": Settings().hack_ucf_onboard.token.get_secret_value()}
+            url = (
+                Settings().hack_ucf_onboard.url
+                + "/admin/get_by_snowflake"
+                + "?discord_id="
+                + discord_id
             )
 
-        else:
-            logger.info(
-                discord_id + "not found in Hackucf" + str(hackucf_data.status_code)
-            )
+            hackucf_data = requests.get(url, cookies=cookies)
+            if hackucf_data.status_code == 200:
+                hackucf_data = hackucf_data.json().get("data")
+                user.hackucf_id = uuid.UUID(hackucf_data.get("id"))
+                user.first_name = hackucf_data.get("first_name")
+                user.last_name = hackucf_data.get("surname")
+                user.experience = hackucf_data.get("experience")
+                user.hackucf_member = hackucf_data.get("is_full_member")
+                user.sudo = hackucf_data.get("sudo")
+                logger.info(
+                    "User found in Hackucf\n Plinko ID: "
+                    + str(user.id)
+                    + "\n Hackucf ID: "
+                    + str(user.hackucf_id)
+                )
+
+            else:
+                logger.info(
+                    discord_id + "not found in Hackucf" + str(hackucf_data.status_code)
+                )
 
         infra_email = ""
 

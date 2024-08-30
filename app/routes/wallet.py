@@ -1,26 +1,170 @@
 import json
+import logging
 import os
 import uuid
 from typing import Optional
 
-import boto3
 import requests
 from airpress import PKPass
 from botocore.exceptions import ClientError
-from fastapi import APIRouter, Cookie, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Cookie, Depends, Request, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
+from google.auth import crypt, jwt
+from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from pydantic import error_wrappers, validator
 
 from app.models.info import InfoModel
-from app.models.user import PublicContact
+from app.models.user import PublicContact, UserModel, user_to_dict
 from app.util.authentication import Authentication
+from app.util.database import Session, get_session, get_user
 from app.util.errors import Errors
-from app.util.options import Options
+from app.util.settings import Settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/wallet", tags=["API", "MobileWallet"], responses=Errors.basic_http()
 )
 
+
+class GoogleWallet:
+    def __init__(self):
+        self.auth_dict = json.loads(
+            Settings().google_wallet.auth_json.get_secret_value()
+        )
+        self.auth()
+        # [START auth]
+
+    def auth(self):
+        """Create authenticated HTTP client using a service account file."""
+        self.credentials = Credentials.from_service_account_info(
+            self.auth_dict,
+            scopes=["https://www.googleapis.com/auth/wallet_object.issuer"],
+        )
+
+        self.client = build("walletobjects", "v1", credentials=self.credentials)
+
+    # [END auth]
+    # [START createObject]
+    def create_object(
+        self, issuer_id: str, class_suffix: str, user_data: UserModel
+    ) -> str:
+        """Create an object.
+
+        Args:
+            issuer_id (str): The issuer ID being used for this request.
+            class_suffix (str): Developer-defined unique ID for the pass class.
+            object_suffix (str): Developer-defined unique ID for the pass object.
+
+        Returns:
+            The pass object ID: f"{issuer_id}.{object_suffix}"
+        """
+        user_id = str(user_data.id)
+        # Check if the object exists
+        try:
+            self.client.eventticketobject().get(
+                resourceId=f"{issuer_id}.{user_id}"
+            ).execute()
+        except HttpError as e:
+            if e.status_code != 404:
+                # Something else went wrong...
+                print(e.error_details)
+                return f"{issuer_id}.{user_id}"
+        else:
+            print(f"Object {issuer_id}.{user_id} already exists!")
+            return f"{issuer_id}.{user_id}"
+
+        # See link below for more information on required properties
+        # https://developers.google.com/wallet/tickets/events/rest/v1/eventticketobject
+        new_object = {
+            "id": f"{issuer_id}.{user_id}",
+            "classId": f"{issuer_id}.{class_suffix}",
+            "state": "ACTIVE",
+            "barcode": {
+                "type": "QR_CODE",
+                "value": user_id,
+            },
+            "locations": [
+                {
+                    "latitude": 28.601393474451346,
+                    "longitude": -81.19867982973763,
+                }
+            ],
+            "seatInfo": {
+                "section": {
+                    "defaultValue": {"language": "en-US", "value": "Team Name Here"}
+                },
+                "gate": {"defaultValue": {"language": "en-US", "value": "ENG1-188"}},
+            },
+            "ticketHolderName": user_data.first_name + " " + user_data.last_name,
+            "ticketNumber": user_id,
+        }
+
+        # Create the object
+        response = self.client.eventticketobject().insert(body=new_object).execute()
+
+        print("Object insert response")
+        print(response)
+
+        return f"{issuer_id}.{user_id}"
+
+    # [END createObject]
+    def create_jwt_existing_objects(
+        self, issuer_id: str, user_id: str, suffix: str
+    ) -> str:
+        """Generate a signed JWT that references an existing pass object.
+
+        When the user opens the "Add to Google Wallet" URL and saves the pass to
+        their wallet, the pass objects defined in the JWT are added to the
+        user's Google Wallet app. This allows the user to save multiple pass
+        objects in one API call.
+
+        The objects to add must follow the below format:
+
+        {
+            'id': 'ISSUER_ID.OBJECT_SUFFIX',
+            'classId': 'ISSUER_ID.CLASS_SUFFIX'
+        }
+
+        Args:
+            issuer_id (str): The issuer ID being used for this request.
+
+        Returns:
+            An "Add to Google Wallet" link
+        """
+
+        # Multiple pass types can be added at the same time
+        # At least one type must be specified in the JWT claims
+        # Note: Make sure to replace the placeholder class and object suffixes
+        objects_to_add = {
+            # Event tickets
+            "eventTicketObjects": [
+                {"id": f"{issuer_id}.{user_id}", "classId": f"{issuer_id}.{suffix}"}
+            ],
+        }
+
+        # Create the JWT claims
+        claims = {
+            "iss": self.credentials.service_account_email,
+            "aud": "google",
+            "origins": ["www.example.com"],
+            "typ": "savetowallet",
+            "payload": objects_to_add,
+        }
+
+        # The service account credentials are used to sign the JWT
+        signer = crypt.RSASigner.from_service_account_info(self.auth_dict)
+        token = jwt.encode(signer, claims).decode("utf-8")
+
+        return f"https://pay.google.com/gp/v/save/{token}"
+
+    # [END jwtExisting]
+
+
+if Settings().google_wallet.enable:
+    google_wallet = GoogleWallet()
 
 """
 Used to get Discord image.
@@ -177,11 +321,23 @@ def apple_wallet(user_data):
     p.add_to_pass_package(("pass.json", pass_data))
 
     # Add locally stored credentials
-    with open(
-        os.path.join(os.path.dirname(__file__), "..", "config/pki/hackucf.key"), "rb"
-    ) as key, open(
-        os.path.join(os.path.dirname(__file__), "..", "config/pki/hackucf.pem"), "rb"
-    ) as cert:
+    # Add locally stored credentials
+    key_path = Settings().apple_wallet.pki_dir / "hackucf.key"
+    cert_path = (
+        Settings().apple_wallet.pki_dir / "hackucf.pem"
+    )  # Assuming a different cert file
+
+    # Check if files exist before opening them
+    if not key_path.exists():
+        logger.error(f"File not found: {key_path}")
+        raise FileNotFoundError(f"File not found: {key_path}")
+
+    if not cert_path.exists():
+        logger.error(f"File not found: {cert_path}")
+        raise FileNotFoundError(f"File not found: {cert_path}")
+
+    # Open the files
+    with key_path.open("rb") as key, cert_path.open("rb") as cert:
         # Add credentials to pass package
         p.key = key.read()
         p.cert = cert.read()
@@ -219,17 +375,44 @@ async def aapl_gen(
     request: Request,
     token: Optional[str] = Cookie(None),
     payload: Optional[object] = {},
+    session: Session = Depends(get_session),
 ):
-    dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table(options.get("aws").get("dynamodb").get("table"))
-
     # Get data from DynamoDB
-    user_data = table.get_item(Key={"id": payload.get("id")}).get("Item", None)
+    user_data = get_user(session, uuid.UUID(payload.get("id")))
 
-    p = apple_wallet(user_data)
+    p = apple_wallet(user_to_dict(user_data))
 
     return Response(
         content=bytes(p),
         media_type="application/vnd.apple.pkpass",
         headers={"Content-Disposition": 'attachment; filename="hackucf.pkpass"'},
     )
+
+
+@router.get("/google")
+@Authentication.member
+async def aapl_gen(
+    request: Request,
+    token: Optional[str] = Cookie(None),
+    payload: Optional[object] = {},
+    session: Session = Depends(get_session),
+):
+    user_data = get_user(session, uuid.UUID(payload.get("id")))
+
+    issuer_id = Settings().google_wallet.issuer_id
+    # TODO fix this
+    if user_data.assigned_run == "day1":
+        class_suffix = Settings().google_wallet.class_suffix_day1
+    elif user_data.assigned_run == "day2":
+        class_suffix = Settings().google_wallet.class_suffix_day2
+    else:
+        return Errors()
+
+    object_id = google_wallet.create_object(issuer_id, class_suffix, user_data)
+    redir_url = google_wallet.create_jwt_existing_objects(
+        issuer_id,
+        str(user_data.id),
+        class_suffix,
+    )
+
+    return RedirectResponse(redir_url)

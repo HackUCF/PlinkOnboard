@@ -8,7 +8,6 @@ from jose import JWTError, jwt
 
 # Import options and errors
 from app.util.errors import Errors
-from app.util.options import Options
 from app.util.settings import Settings
 
 

@@ -28,7 +28,6 @@ from app.util.database import Session, get_session, get_user
 from app.util.discord import Discord
 from app.util.errors import Errors
 from app.util.kennelish import Kennelish, Transformer
-from app.util.options import Options
 from app.util.plinko import Plinko
 from app.util.settings import Settings
 from app.util.websockets import ConnectionManager

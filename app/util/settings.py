@@ -154,7 +154,8 @@ class GoogleWalletConfig(BaseModel):
     """
 
     auth_json: Optional[SecretStr] = Field(None)
-    class_suffix: Optional[str] = Field(None)
+    class_suffix_day1: Optional[str] = Field(None)
+    class_suffix_day2: Optional[str] = Field(None)
     issuer_id: Optional[str] = Field(None)
     enable: Optional[bool] = Field(True)
 
@@ -165,7 +166,8 @@ class GoogleWalletConfig(BaseModel):
             required_fields = [
                 "auth_json",
                 "issuer_id",
-                "class_suffix",
+                "class_suffix_day1",
+                "class_suffix_day2",
             ]
             for field in required_fields:
                 if getattr(values, field) is None:
