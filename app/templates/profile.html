@@ -32,7 +32,12 @@
         <div class="form">
             <h1>Your Employee Profile</h1>
             <div alt="Your I H P L Employee QR code." id="qr" class="qr"></div>
-            <a alt="Add to Apple Wallet" id="apple_wallet" href="/wallet/apple"><img src="/static/apple_wallet.svg"></img></a>
+            {% if user_data.get('assigned_run') != '' %}
+            <div class="wallet-container">
+            <a id="apple_wallet" href="/wallet/apple"><img src="/static/apple_wallet.svg"></img></a>
+            <a id="goolge_wallet" target="_blank" href="/wallet/google"><img src="/static/google_wallet_button.svg"></img></a>
+            </div>
+            {% endif %}
             <div class="entry">
                 <h3>Name</h3>
                 <div>{{ user_data.get('first_name', 'Unknown') }} {{ user_data.get('last_name', 'Unknown') }}</div>
@@ -116,7 +121,7 @@
             {% endif %}
 
         </div>
-        
+
         <details>
             <summary>See Machine-Readable Data (Advanced)</summary>
             <code aria-hidden="true">{{user_data}}</code>

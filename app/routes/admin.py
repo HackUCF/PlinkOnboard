@@ -15,7 +15,6 @@ from app.models.user import (
     user_to_dict,
     user_update_instance,
 )
-
 from app.util.authentication import Authentication
 from app.util.database import get_session
 from app.util.discord import Discord
@@ -149,7 +148,7 @@ async def admin_get_single(
     statement = (
         select(UserModel)
         .where(UserModel.id == uuid.UUID(user_jwt["id"]))
-        .options(selectinload(UserModel.discord), selectinload(UserModel.ethics_form))
+        .options(selectinload(UserModel.discord))
     )
     user_data = user_to_dict(session.exec(statement).one_or_none())
 
@@ -177,7 +176,7 @@ async def admin_get_snowflake(
     statement = (
         select(UserModel)
         .where(UserModel.discord_id == discord_id)
-        .options(selectinload(UserModel.discord), selectinload(UserModel.ethics_form))
+        .options(selectinload(UserModel.discord))
     )
     data = user_to_dict(session.exec(statement).one_or_none())
     # if not data:
@@ -237,18 +236,19 @@ async def admin_edit(
     """
     API endpoint that modifies a given user's data
     """
-    member_id = input_data.id
+    member_id = uuid.UUID(input_data.id)
 
     statement = (
         select(UserModel)
         .where(UserModel.id == member_id)
-        .options(selectinload(UserModel.discord), selectinload(UserModel.ethics_form))
+        .options(selectinload(UserModel.discord))
     )
     member_data = session.exec(statement).one_or_none()
 
     if not member_data:
         return Errors.generate(request, 404, "User Not Found")
     input_data = user_to_dict(input_data)
+    input_data.pop("id")
     user_update_instance(member_data, input_data)
 
     session.add(member_data)
@@ -266,9 +266,7 @@ async def admin_list(
     """
     API endpoint that dumps all users as JSON.
     """
-    statement = select(UserModel).options(
-        selectinload(UserModel.discord), selectinload(UserModel.ethics_form)
-    )
+    statement = select(UserModel).options(selectinload(UserModel.discord))
     users = session.exec(statement)
     data = []
     for user in users:
@@ -288,9 +286,7 @@ async def admin_list_csv(
     """
     API endpoint that dumps all users as CSV.
     """
-    statement = select(UserModel).options(
-        selectinload(UserModel.discord), selectinload(UserModel.ethics_form)
-    )
+    statement = select(UserModel).options(selectinload(UserModel.discord))
     data = user_to_dict(session.exec(statement))
 
     output = "Membership ID, First Name, Last Name, NID, Is Returning, Gender, Major, Class Standing, Shirt Size, Discord Username, Experience, Cyber Interests, Event Interest, Is C3 Interest, Comments, Ethics Form Timestamp, Minecraft, Infra Email\n"

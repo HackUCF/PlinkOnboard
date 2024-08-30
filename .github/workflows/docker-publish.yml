@@ -37,4 +37,4 @@ jobs:
         run: docker tag onboardlite:${{ steps.extract_branch.outputs.branch }} ghcr.io/hackucf/plinkonboard:${{ steps.extract_branch.outputs.branch }}
 
       - name: Push Docker image
-        run: docker push ghcr.io/hackucf/onboardlite:${{ steps.extract_branch.outputs.branch }}
+        run: docker push ghcr.io/hackucf/plinkonboard:${{ steps.extract_branch.outputs.branch }}
