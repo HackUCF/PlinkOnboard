@@ -46,6 +46,9 @@ from app.util.plinko import Plinko
 # Import options
 from app.util.settings import Settings
 
+if Settings().telemetry.enable:
+    import sentry_sdk
+
 # Init Logger
 logging.basicConfig(
     level=logging.INFO,
@@ -59,6 +62,19 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="./app/static"), name="static")
+
+if Settings().telemetry.enable:
+    sentry_sdk.init(
+        dsn=Settings().telemetry.url,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        traces_sample_rate=0.3,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of sampled transactions.
+        # We recommend adjusting this value in production.
+        profiles_sample_rate=0.3,
+        environment=Settings().telemetry.env,
+    )
 
 # Import endpoints from ./routes
 app.include_router(api.router)
