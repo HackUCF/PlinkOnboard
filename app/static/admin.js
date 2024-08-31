@@ -112,7 +112,7 @@ const sanitizeHTML = (data) => {
 
 function showTable() {
     qrScanner.stop();
-    
+
     document.getElementById("user").style.display = "none";
     document.getElementById("scanner").style.display = "none";
     document.getElementById("users").style.display = "block";
@@ -125,7 +125,7 @@ function showQR() {
     if (camLS && typeof camLS !== "undefined") {
         qrScanner.setCamera(camLS);
     }
-    
+
     document.getElementById("user").style.display = "none";
     document.getElementById("users").style.display = "none";
     document.getElementById("scanner").style.display = "block";
@@ -141,7 +141,7 @@ function showUser(userId) {
 
     // Statuses
     document.getElementById("statusColor").style.color = user.waitlist === 1 ? "#51cd7f" : "#cf565f";
-    
+
     document.getElementById("status").innerText = user.status;
     document.getElementById("shirt_status").innerText = user.did_get_shirt ? "Claimed" : `Unclaimed`
 
@@ -362,7 +362,7 @@ window.onload = evt => {
         {
             maxScansPerSecond: 10,
             highlightScanRegion: true,
-            returnDetailedScanResult: true 
+            returnDetailedScanResult: true
         },
     );
 

@@ -29,6 +29,7 @@ class UserModel(SQLModel, table=True):
     last_name: Optional[str] = ""
     email: Optional[str] = ""
     did_get_shirt: Optional[bool] = False
+    shirt_size: Optional[str] = ""
 
     # The MLH required stuff
     did_agree_to_do_kh: Optional[bool] = False  # must be True to compete

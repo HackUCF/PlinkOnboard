@@ -119,7 +119,7 @@ function get_body() {
         General idea I'm thinking: iterate through inputs, identify what we need to do
         to get a valid input (such as checking fieldset children), then add to body object.
      */
-    
+
     for (let i = 0; i < els.length; i++) {
         let key = els[i].getAttribute("name");
         let value = get_value(els[i]);
@@ -209,7 +209,7 @@ function submit_and_nav(target_url) {
     // This /is/ a client-side check at first, but there is
     // another check that will be done later that should verify
     // this later.
-    // 
+    //
     // The requirement for client-side-only verification of whether
     // a required field was actually filled out is a design flaw and
     // an accepted risk to promote maintainability and flexibility
@@ -271,7 +271,7 @@ window.onload = (evt) => {
             resetInfra();
         }
     }
-    
+
     // Should we show the "spin up box" button?
     if (document.getElementById("newInfraBox")) {
         document.getElementById("newInfraBox").onclick = (evt) => {
@@ -282,7 +282,7 @@ window.onload = (evt) => {
         }).then(resp => {
             if (resp.imageId && resp.gbmName) {
                 document.getElementById("newInfraBox").style.display = "inline-block";
-            }  
+            }
         })
     }
 

@@ -79,7 +79,7 @@ window.onload = () => {
         {
             maxScansPerSecond: 10,
             highlightScanRegion: true,
-            returnDetailedScanResult: true 
+            returnDetailedScanResult: true
         },
     );
 

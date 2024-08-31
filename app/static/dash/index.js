@@ -69,7 +69,7 @@ function update() {
         for (let i = 0; i < team_count; i++) {
             teams.push([]);
         }
-        
+
         // Populate team-info array
         for (let i = 0; i < data.length; i++) {
             const user = data[i];
