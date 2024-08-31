@@ -129,7 +129,7 @@ class Authentication:
                     essay="Sessions last for about fifteen weeks. You need to re-log-in between semesters.",
                 )
             if Settings().telemetry.enable:
-                set_user({"id": user_jwt["id"]})
+                set_user({"id": payload["id"]})
 
             return await func(request, token, payload, *args, **kwargs)
 
