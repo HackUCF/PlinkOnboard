@@ -185,6 +185,15 @@ else:
     logger.warn("Missing GWallet config")
 
 
+class WaitlistConfig(BaseModel):
+    participation_cap: int
+    waitlist_groups: int
+    hard_cap: int
+
+
+waitlist_config = settings.get("waitlist")
+
+
 class EmailConfig(BaseModel):
     """
     Represents the configuration for an email.
@@ -331,6 +340,7 @@ class Settings(BaseSettings, metaclass=SingletonBaseSettingsMeta):
     jwt: JwtConfig = jwt_config
     database: DatabaseConfig = database_config
     http: HttpConfig = http_config
+    waitlist: WaitlistConfig = waitlist_config
     #    keycloak: KeycloakConfig = keycloak_config
     google_wallet: GoogleWalletConfig = google_wallet_config
     telemetry: Optional[TelemetryConfig] = telemetry_config

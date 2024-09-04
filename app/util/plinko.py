@@ -71,9 +71,9 @@ class Plinko:
         """
         Return waitlist metadata as (current_count, status, group #)
         """
-        participation_cap = 119
-        waitlist_groups = 15  # 150, 180, 210, etc.
-        hard_cap = 200
+        participation_cap = Settings().waitlist.participation_cap
+        waitlist_groups = Settings().waitlist.waitlist_groups  # 150, 180, 210, etc.
+        hard_cap = Settings().waitlist.hard_cap
 
         data = session.query(UserModel).filter(UserModel.waitlist > 0).all()
         current_count = len(data)
