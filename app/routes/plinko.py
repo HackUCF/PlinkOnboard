@@ -213,11 +213,15 @@ async def checkin(
     user_data = get_user(session, uuid.UUID(member_id))
 
     if not user_data:
-        return {
-            "success": False,
-            "msg": "Invalid membership ID. Did you show the right QR code?",
-            "user": {},
-        }
+        session.query(UserModel).filter(
+            UserModel.hackucf_id == uuid.UUID(member_id)
+        ).one_or_none()
+        if not user_data:
+            return {
+                "success": False,
+                "msg": "Invalid membership ID. Did you show the right QR code?",
+                "user": {},
+            }
 
     if user_data.get("assigned_run").lower() != run.lower():
         return {
