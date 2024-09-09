@@ -185,13 +185,17 @@ async def get_dash(request: Request, token: Optional[str] = Cookie(None)):
 @router.get("/scoreboard")
 @Authentication.admin
 async def get_scoreboard(request: Request, token: Optional[str] = Cookie(None)):
-    return templates.TemplateResponse("scoreboard.html", {"request": request})
+    return templates.TemplateResponse(
+        "scoreboard.html", {"request": request, "domain": Settings().http.domain}
+    )
 
 
 @router.get("/scoreboard/edit")
 @Authentication.admin
 async def hack_scoreboard(request: Request, token: Optional[str] = Cookie(None)):
-    return templates.TemplateResponse("scoreboard_editor.html", {"request": request})
+    return templates.TemplateResponse(
+        "scoreboard_editor.html", {"request": request, "domain": Settings().http.domain}
+    )
 
 
 @router.get("/checkin")
