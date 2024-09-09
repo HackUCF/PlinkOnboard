@@ -23,7 +23,13 @@ from sqlalchemy.sql.sqltypes import UUID
 from sqlmodel import Session, select
 
 from app.models.info import InfoModel
-from app.models.user import DiscordModel, PublicContact, UserModel, UserModelMutable
+from app.models.user import (
+    DiscordModel,
+    PublicContact,
+    UserModel,
+    UserModelMutable,
+    user_to_dict,
+)
 from app.util.authentication import Authentication
 from app.util.database import Session, get_session, get_user
 from app.util.discord import Discord
@@ -137,15 +143,14 @@ async def get_team_info(
         return Errors.generate(request, 404, "Missing ?run")
 
     # Get all participants
-    statement = select(UserModel).options(
-        selectinload(UserModel.discord), selectinload(UserModel.ethics_form)
-    )
+    statement = select(UserModel).options(selectinload(UserModel.discord))
     users = session.exec(statement)
     data = []
     for user in users:
         user = user_to_dict(user)
         data.append(user)
 
+    output = []
     # Find hightest index.
     team_count = -1
     for user in data:
