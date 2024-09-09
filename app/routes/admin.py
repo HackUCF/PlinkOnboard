@@ -250,10 +250,10 @@ async def admin_edit(
     input_data = user_to_dict(input_data)
     input_data.pop("id")
     user_update_instance(member_data, input_data)
-
+    member_reutrn = user_to_dict(member_data)
     session.add(member_data)
     session.commit()
-    return {"data": user_to_dict(member_data), "msg": "Updated successfully!"}
+    return {"data": member_reutrn, "msg": "Updated successfully!"}
 
 
 @router.get("/list")
