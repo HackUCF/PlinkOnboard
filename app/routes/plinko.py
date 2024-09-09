@@ -20,6 +20,7 @@ from jose import JWTError, jwt
 from pydantic import error_wrappers, validator
 from sqlalchemy.orm import selectinload
 from sqlalchemy.sql.sqltypes import UUID
+from sqlmodel import Session, select
 
 from app.models.info import InfoModel
 from app.models.user import DiscordModel, PublicContact, UserModel, UserModelMutable
