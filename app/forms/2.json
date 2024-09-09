@@ -35,6 +35,14 @@
         "options": ["S", "M", "L", "XL", "2XL", "3XL"],
         "key": "shirt_size",
         "required": true
+      },
+      {
+        "label": "Cybersecurity Experience",
+        "caption": "How much do you know about computer security?",
+        "input": "slider",
+        "novice_label": "Whats a computer?",
+        "expert_label": "Champion",
+        "key": "experience"
       }
     ]
   },
