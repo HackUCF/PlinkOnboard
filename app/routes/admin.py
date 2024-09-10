@@ -287,10 +287,11 @@ async def admin_list_csv(
     API endpoint that dumps all users as CSV.
     """
     statement = select(UserModel).options(selectinload(UserModel.discord))
-    data = user_to_dict(session.exec(statement))
+    data = session.exec(statement)
 
     output = "Membership ID, First Name, Last Name, NID, Is Returning, Gender, Major, Class Standing, Shirt Size, Discord Username, Experience, Cyber Interests, Event Interest, Is C3 Interest, Comments, Ethics Form Timestamp, Minecraft, Infra Email\n"
     for user in data:
+        user = user_to_dict(user)
         output += f'"{user.get("id")}", '
         output += f'"{user.get("first_name")}", '
         output += f'"{user.get("surname")}", '

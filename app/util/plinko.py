@@ -1,6 +1,7 @@
 import json
 import logging
 import uuid
+from typing import List
 
 import requests
 
@@ -49,18 +50,19 @@ class Plinko:
 
         teammates = []
 
-        all_users_with_team_number = (
+        all_users_with_team_number: List[UserModel] = (
             session.query(UserModel)
             .filter(UserModel.team_number == user_team_number)
+            .options(selectinload(UserModel.discord))
             .all()
         )
 
         for user in all_users_with_team_number:
-            if user.get("assigned_run") == user_run and user.get("waitlist") == 1:
+            if user.assigned_run == user_run and user.waitlist == 1:
                 user_lite = {
-                    "first_name": user.get("first_name"),
-                    "discord_id": user.get("discord_id"),
-                    "discord_username": user.get("discord", {}).get("username"),
+                    "first_name": user.first_name,
+                    "discord_id": user.discord_id,
+                    "discord_username": user.discord.username,
                 }
                 teammates.append(user_lite)
 
