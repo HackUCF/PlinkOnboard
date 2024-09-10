@@ -4,6 +4,7 @@ import uuid
 from typing import List
 
 import requests
+from sqlalchemy.orm import selectinload
 
 from app.models.user import DiscordModel, UserModel
 from app.util.database import Session, get_user
@@ -40,7 +41,7 @@ class Plinko:
 
         # Database connection to get user...
 
-        user_data = get_user(session, uuid.UUID(user_id))
+        user_data: UserModel = get_user(session, uuid.UUID(user_id))
 
         user_team_number = user_data.team_number
         user_run = user_data.assigned_run
