@@ -289,28 +289,19 @@ async def admin_list_csv(
     statement = select(UserModel).options(selectinload(UserModel.discord))
     data = session.exec(statement)
 
-    output = "Membership ID, First Name, Last Name, NID, Is Returning, Gender, Major, Class Standing, Shirt Size, Discord Username, Experience, Cyber Interests, Event Interest, Is C3 Interest, Comments, Ethics Form Timestamp, Minecraft, Infra Email\n"
+    output = "id, first_name, surname, shirt_size, discord_username, experience, waitlist, comments, team_name, availability, team_number, assigned_run\n"
     for user in data:
         user = user_to_dict(user)
         output += f'"{user.get("id")}", '
         output += f'"{user.get("first_name")}", '
         output += f'"{user.get("surname")}", '
-        output += f'"{user.get("nid")}", '
-        output += f'"{user.get("is_returning")}", '
-        output += f'"{user.get("gender")}", '
-        output += f'"{user.get("major")}", '
-        output += f'"{user.get("class_standing")}", '
         output += f'"{user.get("shirt_size")}", '
         output += f'"{user.get("discord", {}).get("username")}", '
         output += f'"{user.get("experience")}", '
-        output += f'"{user.get("curiosity")}", '
-        output += f'"{user.get("attending")}", '
-        output += f'"{user.get("c3_interest")}", '
-
+        output += f'"{user.get("waitlist")}", '
         output += f'"{user.get("comments")}", '
-
-        output += f'"{user.get("ethics_form", {}).get("signtime")}", '
-        output += f'"{user.get("minecraft")}", '
-        output += f'"{user.get("infra_email")}"\n'
-
+        output += f'"{user.get("team_name")}", '
+        output += f'"{user.get("availability")}", '
+        output += f'"{user.get("team_number")}", '
+        output += f'"{user.get("assigned_run")}", '
     return Response(content=output, headers={"Content-Type": "text/csv"})
