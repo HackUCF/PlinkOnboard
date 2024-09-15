@@ -294,7 +294,7 @@ async def admin_list_csv(
         user = user_to_dict(user)
         output += f'"{user.get("id")}", '
         output += f'"{user.get("first_name")}", '
-        output += f'"{user.get("surname")}", '
+        output += f'"{user.get("last_name")}", '
         output += f'"{user.get("shirt_size")}", '
         output += f'"{user.get("discord", {}).get("username")}", '
         output += f'"{user.get("experience")}", '
