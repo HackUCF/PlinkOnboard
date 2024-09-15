@@ -303,5 +303,5 @@ async def admin_list_csv(
         output += f'"{user.get("team_name")}", '
         output += f'"{user.get("availability")}", '
         output += f'"{user.get("team_number")}", '
-        output += f'"{user.get("assigned_run")}", '
+        output += f'"{user.get("assigned_run")}" \n'
     return Response(content=output, headers={"Content-Type": "text/csv"})
