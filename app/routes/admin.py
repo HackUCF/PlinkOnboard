@@ -289,7 +289,7 @@ async def admin_list_csv(
     statement = select(UserModel).options(selectinload(UserModel.discord))
     data = session.exec(statement)
 
-    output = "id, first_name, surname, shirt_size, discord_username, experience, waitlist, comments, team_name, availability, team_number, assigned_run\n"
+    output = "id, first_name, last_name, email, shirt_size, discord_username, experience, waitlist, comments, team_name, availability, team_number, assigned_run \n"
     for user in data:
         user = user_to_dict(user)
         output += f'"{user.get("id")}", '
