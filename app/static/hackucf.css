@@ -214,6 +214,8 @@ input[type="text"].search {
   width: calc(100% - (3 * 116px));
   display: inline-block;
   border-radius: 5px;
+  min-width: 71vw;
+  margin: 11px;
 }
 
 .btn.searchbtn {

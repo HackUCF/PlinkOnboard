@@ -209,7 +209,7 @@ async def hack_scoreboard(request: Request, token: Optional[str] = Cookie(None))
 async def checkin(
     request: Request,
     token: Optional[str] = Cookie(None),
-    member_id: Optional[str] = "FAIL",
+    member_id: Optional[uuid.UUID] = "FAIL",
     run: Optional[str] = "FAIL",
     session: Session = Depends(get_session),
 ):
@@ -220,12 +220,11 @@ async def checkin(
     if member_id == "FAIL" or run == "FAIL":
         return Errors.generate(request, 404, "User Not Found (or run not defined)")
 
-    user_data = get_user(session, uuid.UUID(member_id))
+    user_data = get_user(session, member_id)
 
     if not user_data:
-        session.query(UserModel).filter(
-            UserModel.hackucf_id == uuid.UUID(member_id)
-        ).one_or_none()
+        query = session.query(UserModel).filter(UserModel.hackucf_id == member_id)
+        user_data = query.first()
         if not user_data:
             return {
                 "success": False,
@@ -233,7 +232,7 @@ async def checkin(
                 "user": {},
             }
 
-    if user_data.get("assigned_run").lower() != run.lower():
+    if user_data.assigned_run.lower() != run.lower():
         return {
             "success": False,
             "msg": "You are not competing today.",
@@ -245,8 +244,8 @@ async def checkin(
     session.commit()
 
     team_number = -1
-    if user_data.get("team_number"):
-        team_number = int(user_data.get("team_number", -1))
+    if user_data.team_number:
+        team_number = user_data.team_number
 
     return {"success": True, "msg": "Checked in!", "user": user_data}
 

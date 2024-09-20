@@ -1,108 +1,117 @@
 * {
-    margin: 0;
+  margin: 0;
 }
 
 html {
-    background: #1C1C1C;
-    color: white;
-    font-family: "Raleway", "Roboto", sans-serif;
+  background: #1c1c1c;
+  color: white;
+  font-family: "Raleway", "Roboto", sans-serif;
 }
 
 .ico {
-    font-size: 200px;
-    font-weight: bold;
-    font-family: math, monospace, serif;
+  font-size: 200px;
+  font-weight: bold;
+  font-family: math, monospace, serif;
 }
 
 .red {
-    color: #CC575D;
+  color: #cc575d;
 }
 
 .green {
-    color: #57CC7F;
+  color: #57cc7f;
 }
 
 .blue {
-    color: #0B8AD2;
+  color: #0b8ad2;
 }
 
 .gold {
-    color: #D2990B;
+  color: #d2990b;
 }
 
 .team.green {
-    background-color: #009206;
-    color: white;
-    border-radius: 5px;
-    padding: 7px;
+  background-color: #009206;
+  color: white;
+  border-radius: 5px;
+  padding: 7px;
 }
 
 .team.purple {
-    background-color: #7D0092;
-    color: white;
-    border-radius: 5px;
-    padding: 7px;
+  background-color: #7d0092;
+  color: white;
+  border-radius: 5px;
+  padding: 7px;
+}
+
+.team.yellow {
+  background-color: #d2990b;
+  color: white;
+  border-radius: 5px;
+  padding: 7px;
 }
 
 em {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
-#success, #failure, #load {
-    display: none;
+#success,
+#failure,
+#load {
+  display: none;
 }
 
 h3 {
-    font-weight: normal;
+  font-weight: normal;
 }
 
 .rooms {
-    display: flex;
+  display: flex;
 }
 
 .room {
-    display: inline-block;
-    flex: auto;
-    margin: 20px;
-    padding: 20px;
+  display: inline-block;
+  flex: auto;
+  margin: 20px;
+  padding: 20px;
 }
 
 .main {
-    padding: 30px;
-    text-align: center;
+  padding: 30px;
+  text-align: center;
 }
 
 .main > .h1 {
-    margin: 20px;
-    display: inline-block;
+  margin: 20px;
+  display: inline-block;
 }
 
 .team > span {
-    display: inline-block;
-    font-size: 30px;
-    padding: 5px;
-    margin: 10px;
-    width: 36px;
-    height: 36px;
-    text-align: center;
-    background: teal;
-    font-family: monospace;
-    border-radius: 10px;
-    color: transparent;
+  display: inline-block;
+  font-size: 30px;
+  padding: 5px;
+  margin: 10px;
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  background: teal;
+  font-family: monospace;
+  border-radius: 10px;
+  color: transparent;
 }
 
 .team > span.team_number {
-    background-color: transparent;
-    font-weight: bold;
-    font-family: "Raleway", "Roboto", "Helvetica", "Arial", sans-serif;
-    color: white;
+  background-color: transparent;
+  font-weight: bold;
+  font-family: "Raleway", "Roboto", "Helvetica", "Arial", sans-serif;
+  color: white;
 }
 
 span.no {
-    background-color: #CC575D;
-    opacity: 0.3;
+  background-color: #cc575d;
+  opacity: 0.3;
 }
 
 span.yes {
-    background-color: #57CC7F;
+  background-color: #57cc7f;
 }
