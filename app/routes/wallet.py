@@ -61,6 +61,7 @@ class GoogleWallet:
             The pass object ID: f"{issuer_id}.{object_suffix}"
         """
         user_id = str(user_data.id)
+        team_number = str(user_data.team_number)
         # Check if the object exists
         try:
             self.client.eventticketobject().get(
@@ -92,10 +93,7 @@ class GoogleWallet:
                 }
             ],
             "seatInfo": {
-                "section": {
-                    "defaultValue": {"language": "en-US", "value": "Team Name Here"}
-                },
-                "gate": {"defaultValue": {"language": "en-US", "value": "ENG1-188"}},
+                "section": {"defaultValue": {"language": "en-US", "value": team_number}}
             },
             "ticketHolderName": user_data.first_name + " " + user_data.last_name,
             "ticketNumber": user_id,
