@@ -99,8 +99,10 @@ async def get_waitlist(
     """
     Quit HPCC.
     """
-    logger.info(f"User {payload.get('id')} is dropping out of HPCC.")
     user_data = get_user(session, uuid.UUID(payload.get("id")))
+    logger.info(
+        f"AUDIT: User {payload.get('id')} ({user_data.firstname} {user_data.lastname})  is dropping out of HPCC."
+    )
     user_data.waitlist = 0
     session.add(user_data)
     session.commit()

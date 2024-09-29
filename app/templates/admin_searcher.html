@@ -1,17 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-US">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1.0"
+    />
 
     <title>Member Roster - Hack@UCF</title>
-    <link rel="stylesheet" type="text/css" href="/static/hackucf.css">
+    <link rel="stylesheet" type="text/css" href="/static/hackucf.css" />
 
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@900&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@900&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- List library -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
@@ -20,105 +26,129 @@
     <script src="/static/lib/qr-scanner.umd.min.js"></script>
 
     <!-- Font Awesome -->
-    <link href="https://use.fontawesome.com/releases/v6.1.1/css/all.css" rel="stylesheet">
-</head>
-<body>
+    <link
+      href="https://use.fontawesome.com/releases/v6.1.1/css/all.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <div class="nav">
-        <div class="nav_inner">
-            <img src="/static/admin_logo.svg">
-            <div class="right">
-                Signed in as @{{name}}
-            </div>
-        </div>
+      <div class="nav_inner">
+        <img src="/static/admin_logo.svg" />
+        <div class="right">Signed in as @{{name}}</div>
+      </div>
     </div>
     <div class="admin">
-        <div id="users">
-            <input type="text" class="search" placeholder="Search" />
-            <button id="activeFilter" class="btn searchbtn">Any Status</button>
-            <button id="menteeFilter" class="btn searchbtn">Any Assign</button>
-            <button id="scannerOn" class="btn searchbtn">Scanner</button>
-            <table>
-                <thead></thead>
-                <tbody class="list"></tbody>
-            </table>
-        </div>
-        <div class="hide_default" id="user">
-            <div><button id="goBackBtn" class="btn searchbtn">Back</button></div>
-            <img id="pfp"/>
-            <h1 id="name"></h1>
-            <h2 id="discord"></h2>
-            <br>
-            <table class="data_table">
-                <tbody>
-                    <tr><td><h2 id="statusColor">Statuses</h2></td></tr>
+      <div id="users">
+        <input type="text" class="search" placeholder="Search" />
+        <button id="activeFilter" class="btn searchbtn">Any Status</button>
+        <button id="menteeFilter" class="btn searchbtn">Any Assign</button>
+        <button id="scannerOn" class="btn searchbtn">Scanner</button>
+        <table>
+          <thead></thead>
+          <tbody class="list"></tbody>
+        </table>
+      </div>
+      <div class="hide_default" id="user">
+        <div><button id="goBackBtn" class="btn searchbtn">Back</button></div>
+        <img id="pfp" />
+        <h1 id="name"></h1>
+        <h2 id="discord"></h2>
+        <br />
+        <table class="data_table">
+          <tbody>
+            <tr>
+              <td><h2 id="statusColor">Statuses</h2></td>
+          </tbody>tr>
 
-                    <tr>
-                        <td>Participation Status</td>
-                        <td id="status">Value</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td id="email">Value</td>
-                    </tr>
-                    <tr>
-                        <td>T-Shirt Status</td>
-                        <td id="shirt_status">Value</td>
-                    </tr>
+            <tr>
+              <td>Participation Status</td>
+              <td id="status">Value</td>
+            </tr>
+            <tr>
+              <td>Email</td>
+              <td id="email">Value</td>
+            </tr>
+            <tr>
+              <td>T-Shirt Status</td>
+              <td id="shirt_status">Value</td>
+            </tr>
 
-                    <tr><td><h2>Identifiers</h2></td></tr>
+            <tr>
+              <td><h2>Identifiers</h2></td>
+            </tr>
 
-                    <tr>
-                        <td>Plinko ID</td>
-                        <td id="id">Value</td>
-                    </tr>
-                    <tr>
-                        <td>Hack@UCF ID</td>
-                        <td id="hackucf_id">Value</td>
-                    </tr>
+            <tr>
+              <td>Plinko ID</td>
+              <td id="id">Value</td>
+            </tr>
+            <tr>
+              <td>Hack@UCF ID</td>
+              <td id="hackucf_id">Value</td>
+            </tr>
 
-                    <tr><td><h2>Team Status</h2></td></tr>
+            <tr>
+              <td><h2>Team Status</h2></td>
+            </tr>
 
-                    <tr>
-                        <td>Competition Day</td>
-                        <td id="comp_day">Value</td>
-                    </tr>
-                    <tr>
-                        <td>Team Number</td>
-                        <td id="team_number">Value</td>
-                    </tr>
-                    <tr>
-                        <td>Team Name</td>
-                        <td id="team_name">Value</td>
-                    </tr>
-                    <tr>
-                        <td>Experience</td>
-                        <td id="experience">Value</td>
-                    </tr>
-                </tbody>
-            </table>
-            <details>
-                <summary><h2>Actions</h2></summary>
-                <button class="hide_default btn" id="claimShirt"><i aria-hidden="true" class="fa-solid fa-shirt"></i> Claim T-Shirt</button>
-                <button class="btn" id="setAdmin"><i aria-hidden="true" class="fa-solid fa-lock"></i> <span id="adminLabel">Toggle Admin</span></button>
-                <button class="btn" id="sendMessage"><i aria-hidden="true" class="fa-brands fa-discord"></i> Send Discord Message</button>
-                <button class="btn" id="setTeam"><i aria-hidden="true" class="fa-solid fa-users"></i> Set Team</button>
-                <button class="btn" id="toggleCheckIn"><i aria-hidden="true" class="fa-solid fa-circle-check"></i> <span id="checkinLabel">Check In</span></button>
-                <button class="btn" id="toggleAcceptance"><i aria-hidden="true" class="fa-solid fa-certificate"></i> <span id="acceptanceLabel">Force Accept</span></button>
-            </details>
-            <details>
-                <summary><h2>View as JSON</h2></summary>
-                <pre id="user_json">
-
-                </pre>
-            </details>
-        </div>
-        <div class="hide_default" id="scanner">
-            <h2>Present HPCC ID Below</h2>
-            <button id="scannerOff" class="btn">Search Manually</button>
-            <button id="changeCamera" class="btn">Change Camera</button>
-            <video></video>
-        </div>
+            <tr>
+              <td>Competition Day</td>
+              <td id="comp_day">Value</td>
+            </tr>
+            <tr>
+              <td>Team Number</td>
+              <td id="team_number">Value</td>
+            </tr>
+            <tr>
+              <td>Team Name</td>
+              <td id="team_name">Value</td>
+            </tr>
+            <tr>
+              <td>Experience</td>
+              <td id="experience">Value</td>
+            </tr>
+          </tbody>
+        </table>
+        <details>
+          <summary><h2>Actions</h2></summary>
+          <button class="hide_default btn" id="claimShirt">
+            <i aria-hidden="true" class="fa-solid fa-shirt"></i> Claim T-Shirt
+          </button>
+          <button class="btn" id="setAdmin">
+            <i aria-hidden="true" class="fa-solid fa-lock"></i>
+            <span id="adminLabel">Toggle Admin</span>
+          </button>
+          <button class="btn" id="sendMessage">
+            <i aria-hidden="true" class="fa-brands fa-discord"></i> Send Discord
+            Message
+          </button>
+          <button class="btn" id="setTeam">
+            <i aria-hidden="true" class="fa-solid fa-users"></i> Set Team
+          </button>
+          <button class="btn" id="setTeamName">
+            <i aria-hidden="true" class="fa-solid fa-users"></i> Set Team Name
+          </button>
+          <button class="btn" id="toggleCheckIn">
+            <i aria-hidden="true" class="fa-solid fa-circle-check"></i>
+            <span id="checkinLabel">Check In</span>
+          </button>
+          <button class="btn" id="toggleAcceptance">
+            <i aria-hidden="true" class="fa-solid fa-certificate"></i>
+            <span id="acceptanceLabel">Force Accept</span>
+          </button>
+        </details>
+        <details>
+          <summary><h2>View as JSON</h2></summary>
+          <pre id="user_json"></pre>
+        </details>
+      </div>
+      <div class="hide_default" id="scanner">
+        <h2>Present HPCC ID Below</h2>
+        <button id="scannerOff" class="btn">Search Manually</button>
+        <button id="changeCamera" class="btn">Change Camera</button>
+        <video></video>
+      </div>
     </div>
-</body>
-<script type="text/javascript" src="/static/admin.js"></script>
+  </body>
+  <script type="text/javascript" src="/static/admin.js"></script>
 </html>

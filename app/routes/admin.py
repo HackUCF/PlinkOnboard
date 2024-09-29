@@ -135,7 +135,7 @@ async def get_refresh(
 @Authentication.admin
 async def admin_get_single(
     request: Request,
-    user_jwt: Optional[str] = Cookie(None),
+    token: Optional[str] = Cookie(None),
     member_id: Optional[str] = "FAIL",
     session: Session = Depends(get_session),
 ):
@@ -147,7 +147,7 @@ async def admin_get_single(
 
     statement = (
         select(UserModel)
-        .where(UserModel.id == uuid.UUID(user_jwt["id"]))
+        .where(UserModel.id == uuid.UUID(member_id))
         .options(selectinload(UserModel.discord))
     )
     user_data = user_to_dict(session.exec(statement).one_or_none())
@@ -237,7 +237,8 @@ async def admin_edit(
     API endpoint that modifies a given user's data
     """
     member_id = uuid.UUID(input_data.id)
-
+    filtered_data = {k: v for k, v in input_data.dict().items() if v is not None}
+    logger.info(f"AUDIT: Editing user {member_id} with data {filtered_data}")
     statement = (
         select(UserModel)
         .where(UserModel.id == member_id)

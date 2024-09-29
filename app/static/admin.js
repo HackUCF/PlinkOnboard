@@ -246,6 +246,13 @@ function showUser(userId) {
       team_number: Number(team_number),
     });
   };
+  document.getElementById("setTeamName").onclick = (evt) => {
+    const team_name = prompt("Enter this person's team name:");
+    editUser({
+      id: user.id,
+      team_name: team_name,
+    });
+  };
 
   // Set page visibilities
   document.getElementById("users").style.display = "none";
