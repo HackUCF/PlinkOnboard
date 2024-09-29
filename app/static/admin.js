@@ -240,18 +240,22 @@ function showUser(userId) {
       'Enter the run name to put this competitor on (e.g., "Saturday"):',
     );
     const team_number = prompt("Enter this person's team number:");
-    editUser({
-      id: user.id,
-      assigned_run: team_run,
-      team_number: Number(team_number),
-    });
+    if (team_name !== null && team_number !== null) {
+      editUser({
+        id: user.id,
+        assigned_run: team_run,
+        team_number: Number(team_number),
+      });
+    }
   };
   document.getElementById("setTeamName").onclick = (evt) => {
     const team_name = prompt("Enter this person's team name:");
-    editUser({
-      id: user.id,
-      team_name: team_name,
-    });
+    if (team_name !== null) {
+      editUser({
+        id: user.id,
+        team_name: team_name,
+      });
+    }
   };
 
   // Set page visibilities
