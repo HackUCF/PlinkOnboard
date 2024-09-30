@@ -7,6 +7,7 @@ class Errors:
     def __init__(self):
         super(Errors, self).__init__
 
+    @staticmethod
     def generate(request, num=404, msg="Page not found.", essay=""):
         return templates.TemplateResponse(
             "error.html",

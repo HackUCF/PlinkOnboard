@@ -282,7 +282,7 @@ function editUser(payload) {
       // Update user data.
       let member = data2.data;
 
-      member.name = member.first_name + " " + member.surname;
+      member.name = member.first_name + " " + member.last_name;
       member.username = "@" + member.discord.username;
       member.pfp = member.discord.avatar;
       member.status = userStatusString(member);

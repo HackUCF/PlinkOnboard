@@ -90,7 +90,7 @@ async def get_waitlist(
 
 @router.get("/drop-out")
 @Authentication.member
-async def get_waitlist(
+async def drop_out(
     request: Request,
     token: Optional[str] = Cookie(None),
     payload: Optional[object] = {},
@@ -99,9 +99,11 @@ async def get_waitlist(
     """
     Quit HPCC.
     """
-    user_data = get_user(session, uuid.UUID(payload.get("id")))
+    if not payload.get("id"):
+        Errors.generate(request, 400, "No ID provided in token.")
+    user_data: UserModel = get_user(session, uuid.UUID(payload.get("id")))
     logger.info(
-        f"AUDIT: User {payload.get('id')} ({user_data.firstname} {user_data.lastname})  is dropping out of HPCC."
+        f"AUDIT: User {payload.get('id')} ({user_data.first_name} {user_data.last_name})  is dropping out of HPCC."
     )
     user_data.waitlist = 0
     session.add(user_data)
@@ -131,7 +133,7 @@ async def get_team_info(
 
 @router.get("/bot")
 @Authentication.admin
-async def get_team_info(
+async def bot_get_team_info(
     request: Request,
     token: Optional[str] = Cookie(None),
     run: Optional[str] = "FAIL",

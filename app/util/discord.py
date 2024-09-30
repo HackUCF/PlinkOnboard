@@ -50,6 +50,7 @@ class Discord:
 
         return req.status_code < 400
 
+    @staticmethod
     def get_dm_channel_id(discord_id):
         discord_id = str(discord_id)
 
@@ -64,7 +65,8 @@ class Discord:
 
         return resp.get("id", None)
 
-    def send_message(discord_id, message):
+    @staticmethod
+    def send_message(discord_id: str, message: str):
         discord_id = str(discord_id)
         channel_id = Discord.get_dm_channel_id(discord_id)
 
@@ -78,7 +80,7 @@ class Discord:
 
         return req.status_code < 400
 
-    def join_plinko_server(self, discord_id, token):
+    def join_plinko_server(self, discord_id: str, token):
         if not Settings().discord.enable:
             return
         if self.check_presence(discord_id, Settings().discord.guild_id) != "joined":

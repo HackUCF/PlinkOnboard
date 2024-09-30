@@ -45,15 +45,21 @@ def check_current_head(alembic_cfg, connectable):
         return set(context.get_current_heads()) == set(directory.get_heads())
 
 
-def get_user(session, user_id: UUID, use_selectinload: bool = False):
+def get_user(session, user_id: UUID, use_selectinload: bool = False) -> UserModel:
     query = session.query(UserModel).filter(UserModel.id == user_id)
     if selectinload:
         query = query.options(selectinload(UserModel.discord))
-    return query.one_or_none()
+    user_data = query.one_or_none()
+    if not user_data:
+        raise ValueError(f"User with ID {user_id} not found.")
+    return user_data
 
 
-def get_user_discord(session, discord_id, use_selectinload: bool = False):
+def get_user_discord(session, discord_id, use_selectinload: bool = False) -> UserModel:
     query = session.query(UserModel).filter(UserModel.discord_id == discord_id)
     if selectinload:
         query = query.options(selectinload(UserModel.discord))
-    return query.one_or_none()
+    user_data = query.one_or_none()
+    if not user_data:
+        raise ValueError(f"User with Discord ID {discord_id} not found.")
+    return user_data
