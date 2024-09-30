@@ -263,13 +263,7 @@ def apple_wallet(user_data):
                     "key": "view-profile",
                     "value": "You can view and edit your profile at https://hr.plinko.horse/profile.",
                     "attributedValue": "You can view and edit your profile at <a href='https://hr.plinko.horse/profile'>hr.plinko.horse</a>.",
-                },
-                {
-                    "label": "Check In",
-                    "key": "check-in",
-                    "value": "Please visit ENG1-186 (the CyberLab) to check in at your assigned time.",
-                    "attributedValue": "Please visit ENG1-186 (the CyberLab) to check in at your assigned time.",
-                },
+                }
             ],
         },
     }
