@@ -226,7 +226,7 @@ def apple_wallet(user_data):
         "barcodes": [
             {
                 "format": "PKBarcodeFormatQR",
-                "message": user_data.get("id", "Unknown_ID"),
+                "message": str(user_data.get("id", "Unknown_ID")),
                 "messageEncoding": "iso-8859-1",
                 "altText": user_data.get("discord", {}).get("username", None),
             }
@@ -388,7 +388,7 @@ async def aapl_gen(
 
 @router.get("/google")
 @Authentication.member
-async def aapl_gen(
+async def google_wallet(
     request: Request,
     token: Optional[str] = Cookie(None),
     payload: Optional[object] = {},
