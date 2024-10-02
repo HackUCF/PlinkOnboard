@@ -189,8 +189,10 @@ async def oauth_transformer_new(
     discordData = r.json()
 
     # Generate a new user ID or reuse an existing one.
-    user = get_user_discord(session, discordData["id"], use_selectinload=True)
-
+    try:
+        user = get_user_discord(session, discordData["id"], use_selectinload=True)
+    except ValueError:
+        user = None
     # TODO implament Onboard Federation
 
     if not user:
