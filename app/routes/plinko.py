@@ -224,7 +224,10 @@ async def checkin(
     if member_id == "FAIL" or run == "FAIL":
         return Errors.generate(request, 404, "User Not Found (or run not defined)")
 
-    user_data = get_user(session, member_id)
+    try:
+        user_data = get_user(session, member_id)
+    except ValueError:
+        user_data = None
 
     if not user_data:
         query = session.query(UserModel).filter(UserModel.hackucf_id == member_id)
