@@ -167,12 +167,7 @@
         <mq><div id="messageText"></div></mq>
       </div>
     </div>
-    <iframe
-      class="vid"
-      src="https://scoreboard.plinko.horse/s/scorestack/app/dashboards#/view/scorestack-scoreboard?embed=true&_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!f%2Cvalue%3A30000)%2Ctime%3A(from%3Anow-7d%2Fd%2Cto%3Anow))&hide-filter-bar=true"
-      height="600"
-      width="800"
-    ></iframe>
+    <iframe class="vid" src="" height="600" width="800"></iframe>
     <div class="else">
       <div class="center">
         <div id="secondary">
@@ -310,7 +305,7 @@
 
       // WebSockets code (adapted from FastAPI docs)
       let ws = new WebSocket(
-        "wss://{{domain}}/plinko/ws/" + getCookie("token"),
+        "wss://hr.plinko.horse/plinko/ws/" + getCookie("token"),
       );
 
       ws.onmessage = function (event) {

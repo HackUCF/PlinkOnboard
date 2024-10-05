@@ -33,16 +33,16 @@ function populate_column(teams, min, max) {
 }
 
 function populate_page(teams) {
-  let out = `<div id="room_green" class="room">
-        <h2 class="team green">ENG1-187</h2>
+  let out = `<div id="room_purple" class="room">
+        <h2 class="team purple">ENG1-187</h2>
         ${populate_column(teams, 0, 8)}
     </div>
-    <div id="room_purple" class="room">
-        <h2 class="team purple">ENG1-188</h2>
+    <div id="room_yellow" class="room">
+        <h2 class="team yellow">ENG1-188</h2>
         ${populate_column(teams, 8, 15)}
     </div>
-    <div id="room_yellow" class="room">
-        <h2 class="team yellow">ENG1-260</h2>
+    <div id="room_green" class="room">
+        <h2 class="team green">ENG1-260</h2>
         ${populate_column(teams, 16, 22)}
     </div>`;
 

@@ -38,13 +38,13 @@ function scannedCode(result) {
         let room = "ENG1-186 staff desk";
         let team_number = Number(json.user.team_number);
         if (team_number >= 1 && team_number <= 8) {
-          color = "green";
+          color = "purple";
           room = "ENG1-187";
         } else if (team_number >= 9 && team_number <= 15) {
-          color = "purple";
-          room = "ENG1-188";
-        } else if (team_number >= 15 && team_number <= 22) {
           color = "yellow";
+          room = "ENG1-188";
+        } else if (team_number >= 16 && team_number <= 22) {
+          color = "green";
           room = "ENG1-260";
         }
 
