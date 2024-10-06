@@ -43,7 +43,7 @@ function populate_page(teams) {
     </div>
     <div id="room_green" class="room">
         <h2 class="team green">ENG1-260</h2>
-        ${populate_column(teams, 16, 22)}
+        ${populate_column(teams, 15, 22)}
     </div>`;
 
   // Yes, I know this is unsafe.
